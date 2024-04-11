@@ -13,18 +13,6 @@
 
 ---
 
-### IAM と IAM Identity Center
-
-IAM
-- a
-
-<br>
-
-IAM Identity Center
-- b
-
----
-
 ### IAM Identity Centerの利用方法
 
 <br>
