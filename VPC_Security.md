@@ -8,7 +8,7 @@ VPC 上のリソースを悪意のあるアクセスから守る仮想ファイ�
 
 <img src="./img/Security-Group_1.png.webp" />
 
-[セキュリティグループの概要と目的](https://en-junior.com/security-group/#index_id0)
+引用: [セキュリティグループの概要と目的](https://en-junior.com/security-group/#index_id0)
 
 <br>
 
@@ -16,7 +16,7 @@ VPC 上のリソースを悪意のあるアクセスから守る仮想ファイ�
 
 <img src="./img/Security-Group_2.png.webp" />
 
-[セキュリティグループの概要と目的](https://en-junior.com/security-group/#index_id0)
+引用: [セキュリティグループの概要と目的](https://en-junior.com/security-group/#index_id0)
 
 ---
 
@@ -32,7 +32,7 @@ VPC 上のリソースを悪意のあるアクセスから守る仮想ファイ�
 
 <img src="./img/Security-Group_3.png.webp" />
 
-[インバウンドルールとアウトバウンドルール](https://en-junior.com/security-group/#index_id2)
+引用: [インバウンドルールとアウトバウンドルール](https://en-junior.com/security-group/#index_id2)
 
 <br>
 <br>
@@ -195,27 +195,114 @@ $\color{red}{}$
 
 インスタンス立ち上げ後にセキュリティルールを変更する方法 -> [AWS EC2インスタンス作成後にセキュリティグループを変更する方法](https://qiita.com/aws-obenkyo/items/06ff4fc2be3e7560a9ce)
 
+---
+
+### セキュリティグループ & ネットワーク ACL の設定で勘違いしていたこと
+
+- タイプはあくまでも、ラベルとそのプリセットのイメージ
+
+- プロトコルとポートが正しく設定されていれば良い
+
+3000などのポートを解放する方法 -> [ポート開放](https://qiita.com/RikuMoto/items/d2d886e29dbd3a4e9606)
 
 ---
 
-### ネットワーク ALC
+### ネットワーク ACL
 
+ネットワーク ALC の作成には料金はかからない
 
+<br>
+
+ネットワーク ACL は
+$\color{red}{許可と拒否の両方設定可能}$
+
+<br>
+
+ネットワーク ACL は $\color{red}{ステートレス}$
+
+- ステートフル: 
+    - 許可されたリクエストへのレスポンスであってもアウトバウンドルールを適用する
+
+<img src="./img/Stateless_Inspection_1.png" />
+
+<br>
+
+ネットワーク ACL のルールはサブネットに適用される
+
+-> インスタンスに到達する前に通信の可否が判断される
+
+<img src="./img/Network-ACL_2.png.webp" />
+
+引用: [セキュリティグループとネットワークACLの相違点](https://en-junior.com/security-group/#index_id13)
+
+設定項目はルール番号以外セキュリティグループと同じ
+
+- ルール番号とは、(サブネットで送信/受信の際に)1から順番にチェックされる
+
+    - 例
+        - ルール番号の早い方で許可されていれば -> 以降に同じ設定の拒否のルールがあってもその通信は許可される
+
+        - ルール番号の早い方で拒否されていれば　-> 以降に同じ設定の許可のルールがあってもその通信は拒否される
+
+<img src="./img/Network-ACL_1.png" />
+
+<br>
+
+ルール番号に関するわかりやすい説明 -> [セキュリティグループとネットワークACLの相違点](https://en-junior.com/security-group/#index_id13)
 
 ---
 
-### セキュリティグループとネットワーク ALC
+### ネットワーク ACL の作成方法
 
-セキュリティグループとネットワーク ALC の違い
+1\. VPC コンソールより、「ネットワーク ACL」タブから「ネットワークACLを作成」をクリック
+
+<img src="./img/Network-ACL_3.png" />
+
+<br>
+
+2\. ネットワーク ACL を作成する VPC を選択し、「ネットワーク ACL を作成」をクリック
+
+<img src="./img/Network-ACL_4.png" />
+
+<br>
+
+3\. 作成したネットワーク ACL を選択
+
+<img src="./img/Network-ACL_5.png" />
+
+<br>
+
+4\. インバウンド / アウトバウンド ルールーの設定を行う (セキュリティグループと同様)
+
+<img src="./img/Network-ACL_6.png" />
+
+<br>
+
+5\. 「サブネットの関連付け」たぶからネットワーク ACL を適用したいサブネットを選択する
+
+<img src="./img/Network-ACL_7.png" />
+
+<br>
+
+<img src="./img/Network-ACL_8.png" />
+
+<br>
+
+しかし、基本的にはセキュリティグループを使ってインスタンス単位でのアクセス管理を行うのが一般的なケースらしい
+
+---
+
+### セキュリティグループとネットワーク ACC
+
+セキュリティグループとネットワーク ACC の違い
 
 - セキュリティグループ
     - VPC 上の**リソースに対して**設定する
     - ステートフルインスぺクション
     - 許可設定のみ可能
 
-- ネットワーク ALC
+- ネットワーク ACL
     - VPC 上の**サブネットに対して**設定する
     - 設定したサブネット上の全てのリソースに適用される
     - ステートレスインスペクション
     - 許可/拒否両方の設定が可能
----
