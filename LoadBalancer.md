@@ -1,4 +1,5 @@
 TODO: ALBの作成手順
+    - セキュアリスナーの設定について記述
 
 ### ロードバランサーとは
 
@@ -207,6 +208,90 @@ ALB についての参考サイト1: [ロードバランサーのサブネット
 - VPC 内部での ALB からのリクエストをプライベートサブネットにあるインスタンスが受け付ける
     - (プライベートサブネットなので)インスタンスには外部からのアクセスは受けないセキュリグループを付与しておく (VPC内部からのアクセスは受ける)
 
+<br>
+
+1\. EC2 ダッシュボードのロードバランサーより、「ロードバランサーの作成」をクリックする
+
+<img src="./img/ALB-Create_1.png" />
+
+<br>
+
+2\. ALB に関しての項目を設定してゆく
+
+<img src="./img/ALB-Create_2.png" />
+
+- ロードバランサー名
+
+- スキーム
+    - インターネット向け
+        - ALB が外部からのアクセスを捌く場合に選択
+
+    - 内部
+        - ALB が VPC 内からのアクセスを捌く場合に選択
+
+- IP アドレスタイプ
+    - IPv4
+        - クライアントが IPv4 アドレスを使用してロードバランサーと通信する場合は、IPv4 を選択する
+    - Dualstack
+        - クライアントが IPv4 および IPv6 アドレスの両方を使用してロードバランサーと通信する場合、デュアルスタックを選択する
+    - Dualstack without public IPv4
+        - ライアントが IPv6 アドレスのみを使用してロードバランサーと通信する場合、こちらを選択する
+
+<br>
+
+<img src="./img/ALB-Create_3.png" />
+
+- VPC
+    - ALB を配置したい VPC を選択
+    
+- マッピング
+    - ALB が使うサブネットを指定する
+
+    - 今回は、インターネット経由でのアクセスのやり取りをするので **パブリックサブネットを指定**する必要がある
+
+    - ALB では、2つ以上のアベイラビリティーゾーンからのサブネットを選択する必要がある
+
+<br>
+
+<img src="./img/ALB-Create_4.png" />
+
+- セキュリティグループ
+    - ALB に適用するセキュリティグループを選択する
+
+    - 以下の理由から、default と practice-sg-1 が選択されている
+
+        - default: プライベートサブネットが ALB からのリクエストを受け入れてくれるようにするため
+
+        <img src="./img/ALB-Create_5.png" />
+
+        - pratice-sg-1: ALB が外部からの HTTP/HTTPS リクエストを受け入れるようにするため
+
+        <img src="./img/ALB-Create_6.png" />
+
+<br>
+
+<img src="./img/ALB-Create_7.png" />
+
+- リスナーとルーティング
+    - プロトコル
+        - ALB がどの通信プロトコルのリクエストを受け入れるか
+
+    - ポート
+        - ALB が何番ポートでリクエストを受け入れるか
+
+    - デフォルトアクション
+        - ALB が外部からのリクエストを受けた場合、そのリクエストの振り分け先
+
+<br>
+
+TODO: ここから
+- セキュアリスナーの設定
+
+    
+
+参考サイト
+
+公式: [Application Load Balancer の作成](https://docs.aws.amazon.com/ja_jp/elasticloadbalancing/latest/application/create-application-load-balancer.html#configure-load-balancer)
 
 ---
 
