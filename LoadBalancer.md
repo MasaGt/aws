@@ -1,6 +1,3 @@
-TODO: ALBの作成手順
-    - まだ記述していない設定について記述
-
 ### ロードバランサーとは
 
 サーバーへのアクセスを捌いていく装置
@@ -55,13 +52,13 @@ TODO: ALBの作成手順
 
 ### AWS で利用できるロードバランサー
 
-Elastic Load Balancing (ELB)
+AWS での　ロードバランサーを提供するサービスはElastic Load Balancing (ELB)
 
-AWS で利用できるロードバランサーは複数の種類がある
+ELB で利用できるロードバランサーは複数の種類がある
 
 - ALB (Application Load Balancer)
-    - 利用するには、2 AZ 以上が必要（1 AZ では起動できない
-    - ロードバランサー自体への固定 IP 付与はできない
+    - 利用するには、2 AZ (Availability Zone) 以上が必要（1 AZ では起動できない
+    - ロードバランサー自体への固定 IP 付与はできない ->  代わりに DNA名が付与される
     - 対応プロトコル: HTTP、HTTPS
     
 - NLB (Network Load Balancer)
@@ -126,7 +123,7 @@ GLB を選ぶケース
 <br>
 
 ポイント2
-- ロードバランサーに公開鍵を配置し、インターネット間の通信を HTTPS (SSL 暗号化) で行うことができる
+- ロードバランサーにサーバー証明書を配置し、インターネット間の通信を HTTPS (SSL 暗号化) で行うことができる
 
 - 一方で、ロードバランサーと VPC 上の Web サーバーなどのインスタンス間の通信は HTTP で行うことで、 Web サーバーの負荷を減らしたり、鍵の管理を楽にすることができる
 
@@ -161,7 +158,9 @@ ALB についての参考サイト1: [ロードバランサーのサブネット
 
 ### ヘルスチェックとは
 
-サーバーに異常が起きていないかを確認するために、ロードバランサーから定期的にリクエストを送ること
+サーバーに異常が起きていないかを確認するために、ロードバランサーから定期的に振り分け先のサーバーにリクエストを送ること
+
+<br>
 
 ヘルスチェックの種類
 - アクティブ型
@@ -280,17 +279,17 @@ ALB についての参考サイト1: [ロードバランサーのサブネット
         - ALB が何番ポートでリクエストを受け入れるか
 
     - デフォルトアクション
-        - ALB が外部からのリクエストを受けた場合、そのリクエストの振り分け先
+        - ALB が外部からのリクエストを受けた場合、そのリクエストの振り分け先 (ターゲットグループ)
 
 <br>
 
 <img src="./img/ALB-Create_8.png" />
 
-**(SSL/HTTPS リスナーを追加した場合)**
+**(HTTPS リスナーを追加した場合)**
 
 - セキュアリスナーの設定
 
-    *ALB に SSL/TSL 処理を行わせるための設定項目
+    *ALB に SSL / TSL 処理を行わせるための設定項目
 
     - セキュリティポリシー
         - クライアントと ALB 間での通信プロトコルおよび暗号スイートの設定項目
@@ -306,12 +305,43 @@ ALB についての参考サイト1: [ロードバランサーのサブネット
         - クライアントの認証を利用した HTTPS 通信を行いたい場合に選択する
         - 特別に許可を与えた顧客のみアクセス許可したいWebサービスが当てはまる
 
-TODO: 他の設定項目について追記する
+<br>
 
+<img src="./img/ALB-Create_9.png" />
+
+<br>
+
+- AWS Web Application Firewall (WAF)
+    - 詳しくは[WAF](WAF.md)を参照
+    - 不正なアクセスを監視、検出、ブロックするサービス
+
+    <img src="./img/WAF_1.png" />
+
+    引用: [会社の顔「Webサイト」を守れ！AWS WAFとは？ ～構築・運用編～](https://www.cloudsolution.tokai-com.co.jp/white-paper/2021/1005-259.html)
+
+- AWS Global Accelerator
+    - クライアントからのリクストを適切なリージョンに振り分けるサービス
+
+    <img src="./img/Global-Accelerator_1.png" />
+
+    引用: [AWS Global Acceleratorでアクセラレーターを作成する](https://www.yamamanx.com/aws-global-accelerator-create/)
+
+<br>
+
+最後に ALB の設定内容が表示されるので、問題なければ「ロードバランサーの作成」をクリックする
+
+<img src="./img/ALB-Create_10.png" />
+
+<br>
+<br>
 
 参考サイト
 
-公式: [Application Load Balancer の作成](https://docs.aws.amazon.com/ja_jp/elasticloadbalancing/latest/application/create-application-load-balancer.html#configure-load-balancer)
+- 公式の ALB 説明ページ -> [Application Load Balancer の作成](https://docs.aws.amazon.com/ja_jp/elasticloadbalancing/latest/application/create-application-load-balancer.html#configure-load-balancer)
+
+- 公式の HTTPS リスナーの設定についての説明ページ -> [Application Load Balancer 用の HTTPS リスナーを作成する](https://docs.aws.amazon.com/ja_jp/elasticloadbalancing/latest/application/create-https-listener.html#describe-ssl-policies)
+
+- ALB のセキュリティポリシーの選定について -> [ELB のセキュリティポリシー変更はブラウザの対応プロトコルを考慮して慎重に](https://dev.classmethod.jp/articles/sugano-028-security/)
 
 ---
 
@@ -322,6 +352,8 @@ TODO: 他の設定項目について追記する
 - 作成し、そのままにしておくと利用１時間ごとに使用料が発生する
 
 - ロードバランサーへの接続アクセス数/処理したバイト数などのうち、**一番使用量の多い要素にのみ** に対してさらに費用が発生する
+
+<br>
 
 ロードバランサーの料金についての参考サイト: [【AWS入門】AWSのELBとは？ロードバランサーの種類、特徴、料金を紹介](https://cloudnavi.nhn-techorus.com/archives/3640#ELB)
 
