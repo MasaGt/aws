@@ -520,6 +520,7 @@ Multi-AZ DB Cluster
 
 - フェイルオーバー時は最新の変更レコードを持っている Reader を Writer へ昇格させる
     - Multi-AZ DB Instances と比較してフェイルオーバーの高速化が見込める
+
 <img src="./img/Multi-AZ-DB-Cluster.png" />
 
 <br>
@@ -563,3 +564,29 @@ Optimized Writeについて
 
 2重書き込みバッファーについて
 - [InnoDB の DoubleWrite 技術をみる MySQL InnoDB](https://qiita.com/shimacpyon/items/3b34ca93eb31736a7562)
+
+---
+
+### シングルAZ構成にしたい場合
+
+*前提: サブネットグループの作成には2つ以上の AZ を指定しなければいけない -> VPC は複数 AZ から構成されている必要がある
+
+ここでのシングルAZという意味は EC2 などのDBのクライアントとなるインスタンスと RDS インスタンスを同じ AZ に配置するということ
+
+<img src="./img/RDS-SingleAZ_1.png" />
+
+引用: [[小ネタ] RDSのSingle-AZ構成でAvailability Zoneを変更する方法](https://dev.classmethod.jp/articles/rds-singleaz-change-az/)
+
+<br>
+
+具体的な方法
+RDS インスタンス作成後にインスタンスが配置された AZ を確認。シングル AZ になっていなかったら、強制フェイルオーバーを実行することでインスタンスを他の AZ に配置し直す
+
+<br>
+<br>
+
+参考サイト
+
+- [RDSってなんでAZ(Availability Zone)を指定する項目がふたつあるの？](https://dev.classmethod.jp/articles/rds-has-two-configs-concerning-availability-zone/)
+- [マルチAZ構成のRDS(MySQL)を強制フェイルバックさせてみた](https://dev.classmethod.jp/articles/multiaz-rds-failback/)
+- [[小ネタ] RDSのSingle-AZ構成でAvailability Zoneを変更する方法](https://dev.classmethod.jp/articles/rds-singleaz-change-az/)
