@@ -77,13 +77,13 @@
             "Type": "↑の種類"
         },
         "Permission": "FULL_CONTROL" // 付与される許可の種類 
-    },
-    {
-        "Grantee": {
-            ...
         },
-        "Permission": "~~"
-    }
+        {
+            "Grantee": {
+                ...
+            },
+            "Permission": "~~"
+        }
     ]
 }
 ```
