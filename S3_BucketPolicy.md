@@ -184,6 +184,10 @@ Principalについて
 
 [AWS JSON ポリシーの要素: Principal](https://docs.aws.amazon.com/ja_jp/IAM/latest/UserGuide/reference_policies_elements_principal.html#principal-anonymous)
 
+[S3のバケットポリシー書き方まとめ](https://qiita.com/irico/items/a3ab1f8ebf1ece9cc783)
+
+[バケットポリシーとユーザーポリシー - Amazon Simple Storage Service](https://zenn.dev/mn87/articles/726f7e3574e2fb)
+
 ---
 
 ### "Resource" を正しく理解する
@@ -283,7 +287,80 @@ Action と Resource の関係について
 
 ### バケットポリシーと IAM ポリシー
 
+バケットポリシー
+- バケットに設定する
+- 対象のバケットに対して、一元にアクセス元の許可/拒否を管理したい場合に利用すると便利
 
+<br>
+
+IAMポリシー(ロール)
+- ユーザーや AWS インスタンスに設定する
+- バケットポリシーとは逆に、対象のユーザーに対し一元にアクセス先の許可/拒否を管理したい場合に利用すると便利
+
+<br>
+
+簡単な比較
+
+<img src="./img/S3-Bucket-IAM_1.png" />
+
+引用: [Amazon Simple Storage Service (Amazon S3) 27p](https://pages.awscloud.com/rs/112-TZM-766/images/AWS-Black-Belt_2023_Amazon_S3_Security_0131_v1.pdf)
+
+<br>
+
+#### シングルアカウント/クロスアカウントで S3 を運用する場合
+
+シングルアカウントで運用する場合
+- バケットポリシーまたは IAM ポリシー(ロール)の$\color{red}どちらかに$アクセス許可を設定すれば、 S3 バケット/オブジェクトにアクセス可能
+
+<img src="./img/S3-Bucket-IAM_2.webp" />
+
+引用: [S3のバケットポリシーでハマったので、S3へのアクセスを許可するPrincipalの設定を整理する](https://dev.classmethod.jp/articles/summarize-principal-settings-in-s3-bucket-policy/)
+
+<br>
+
+クロスアカウントで運用する場合 **(バケット所有者でない場合)**
+- バケット所有者側のバケットポリシーとアクセス側での IAM ポリシー(ロール)の$\color{red}両方で$アクセス許可の設定が必要
+
+<img src="./img/S3-Bucket-IAM_3.webp" />
+
+引用: [S3のバケットポリシーでハマったので、S3へのアクセスを許可するPrincipalの設定を整理する](https://dev.classmethod.jp/articles/summarize-principal-settings-in-s3-bucket-policy/)
+
+<br>
+
+#### バケットポリシーと IAM ポリシー/ロールのどちらが強いのか
+
+ポイント
+- バケットポリシーと IAM ポリシー/ロールのどちらかで**明示的な拒否**の設定がされている場合
+    - 対象のアクセスは失敗する
+
+<br>
+
+- バケットポリシーと IAM ポリシー/ロールのどちらにも明示的な拒否がない場合
+    - どちらかに明示的な許可がある場合
+        - 対象のアクセスは成功する
+
+    - どちらにも明示的な許可がない場合
+        - 対象のアクセスは失敗する
+
+*クロスアカウントアクセスの場合、バケットポリシーと IAM ポリシー/ロールの両方で明示的な許可が必要
+
+<img src="./img/S3-Bucket-IAM_4.png" />
+
+引用: [S3 のオブジェクトACLの無効化が推奨となったので、改めて IAM ポリシーと S3 バケットポリシーの評価論理をまとめてみた](https://dev.classmethod.jp/articles/s3-iam-policy-kanzennirikaishita/)
+
+<br>
+<br>
+
+参考サイト
+
+バケットポリシーと IAM ポリシー(ロール)の違い
+- [S3バケットポリシーとIAMポリシーの関係を整理する](https://www.bioerrorlog.work/entry/s3-bucket-policy-vs-iam-policy)
+
+バケットポリシーと IAM ポリシーの片方または両方でアクセス許可が必要なケース
+- [S3のバケットポリシーでハマったので、S3へのアクセスを許可するPrincipalの設定を整理する](https://dev.classmethod.jp/articles/summarize-principal-settings-in-s3-bucket-policy/)
+
+バケットポリシーと IAM のどちらが強力なのか
+- [S3 のオブジェクトACLの無効化が推奨となったので、改めて IAM ポリシーと S3 バケットポリシーの評価論理をまとめてみた](https://dev.classmethod.jp/articles/s3-iam-policy-kanzennirikaishita/)
 
 ---
 
@@ -295,12 +372,22 @@ Action と Resource の関係について
 - ACL を無効にするとオブジェクトの所有者は、バケットの所有者になる
     - たとえ他のユーザーからアップロードされたオブジェクトでも、所有者はバケットの所有者になる
 
+#### バケットポリシーは 「バケットの所有者=オブジェクトの所有者」 のオブジェクトにしか作用しない
+
+- バケットを新規作成する場合、AWS 公式が勧めている通り、オブジェクトライターに関係なく「オブジェクトの所有者 = バケットの所有者」になるよう ACL を無効にし、アクセス管理はバケットポリシー & IAM ポリシー/ロールで行う方が楽 (特別な理由がない場合)
+
 <br>
 <br>
 
 参考サイト
 
+オブジェクトの所有者とアクセス権
+
 [SAA学習-S3-オブジェクト所有者の変更](https://in-housese.hatenablog.com/entry/2021/05/10/082954)
+
+バケットポリシーとオブジェクトの所有者について
+
+[S3クロスアカウントアクセスと所有権を理解する](https://zenn.dev/delta/articles/3fa05d8ecf236d#s3バケットポリシーはバケット所有者とオブジェクト所有者が同じオブジェクトにしか作用しない)
 
 ---
 
@@ -433,7 +520,6 @@ S3 バケットを所有していない他の AWS アカウントからのアク
 - AWS アカウト2 (アカウト1のバケットにアクセスするアカウント)
     - EC2 (アカウント1のバケットへアクセスする手段)
     - S3(バケット)へのアクセスを許可するIAMポリシー/ロール
-
 
 <br>
 
