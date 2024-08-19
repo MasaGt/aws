@@ -47,9 +47,11 @@ AWS サービスリソースを監視するサービスのこと
 
 <br>
 
-4. アラームの作成を行う
+4. メトリクスと条件の指定を設定する
 
     - `メトリクスの選択`をクリック
+    
+        → $\color{red}「どのメトリクス(数値データ)に関するアラームを作成するか」$ というセクション
 
         *メトリクスとは → AWSリソースやアプリケーションのパフォーマンス、使用状況に関する数値データのこと
 
@@ -77,9 +79,13 @@ AWS サービスリソースを監視するサービスのこと
 
     - メトリクスの統計方法や計算間隔を設定する
 
-        - 統計: `最大`を選択し、計算間隔ごとに最大利用額を算出する
+    → $\color{red}「メトリクス値(データ)をどのように算出するか」$
 
-        - メトリクスの計算間隔: 6時間ごとにメトリクスを計算する
+    → また、 $\color{red}「アラームを送信するのはどのような条件か」$ というセクション
+
+    - 統計: `最大`を選択し、計算間隔ごとに最大利用額を算出する
+
+    - メトリクスの計算間隔: 6時間ごとにメトリクス(最大)を計算する
 
     <img src="./img/CloudWatch-Billing-Alarm_8.png" />
 
@@ -95,7 +101,71 @@ AWS サービスリソースを監視するサービスのこと
 
         - `... よりも`: しきい値
 
+
     <img src="./img/CloudWatch-Billing-Alarm_9.png" />
+
+    <br>
+
+    - その他の設定
+
+        - `アラームを実行するデータポイント`: 直近のメトリクス値のうち、何回しきい値を超えたらアラームを送るのかについての設定
+
+            *データポイント=メトリクス値
+
+        - `欠落データの処理`: メトリクス値が何らかの理由により得られなかった時の処理の仕方を指定
+
+        <img src="./img/CloudWatch-Billing-Alarm-Missing-Data_1.png" />
+
+        引用: [【AWS】CloudWatchアラームの「欠落データの処理」について理解する](https://makky12.hatenablog.com/entry/2022/12/19/120500)
+
+    <img src="./img/CloudWatch-Billing-Alarm_10.png" />
+
+<br>
+
+5. アクションを設定する
+
+    設定したしきい値に対して、とある条件が満たされたら $\color{red}どうするか$ を決めるセクション
+
+    - 通知を設定する
+
+        - `アラーム状態トリガー`
+        
+            - `アラーム状態`: 設定したしきい値を超えるとアラーム状態になる
+            
+            - `OK`: 設定した閾値を超えない場合はOK状態
+
+            - `データ不足`: メトリクスが取得できなかった場合にデータ不足状態になる
+            
+                *`欠落データの処理`でMissing(欠落データを見つかりませんとして処理)を設定した場合のみ
+
+        <br>
+
+        - `次の SNS トピックに通知を送信`
+        
+            *SNSトピックについては[こちらを参照]()
+
+    <img src="./img/CloudWatch-Billing-Alarm_11.png" />
+    <img src="./img/CloudWatch-Billing-Alarm_12.png" />
+
+<br>
+
+6. 作成したアラームに名前と説明を設定する
+
+    *トピック名とアラーム名は違う
+
+    <img src="./img/CloudWatch-Billing-Alarm_13.png" />
+
+<br>
+
+7. 最後に、プレビューで各設定項目への設定値を確認し、正しければ`アラームの作成`をクリック
+
+    <img src="./img/CloudWatch-Billing-Alarm_14.png" />
+    <img src="./img/CloudWatch-Billing-Alarm_15.png" />
+    <img src="./img/CloudWatch-Billing-Alarm_16.png" />
+
+
+
+
 
 <br>
 <br>
@@ -114,6 +184,12 @@ CloudWatch Alarm の各項目の詳しい説明
 
 メトリクスの`統計`の意味
 - [CloudWatch 統計定義](https://docs.aws.amazon.com/ja_jp/AmazonCloudWatch/latest/monitoring/Statistics-definitions.html)
+
+`アラームを実行するデータポイント`に関するわかりやすい説明
+- [CloudWatch Alarmの設定項目がよく分からなかったので図にしてみた](https://zenn.dev/fdnsy/articles/be0017bdd02420)
+
+`欠落データの処理`の各設定についてわかりやすい説明
+- [【AWS】CloudWatchアラームの「欠落データの処理」について理解する](https://makky12.hatenablog.com/entry/2022/12/19/120500)
 
 
 ---
