@@ -140,9 +140,9 @@ AWS サービスリソースを監視するサービスのこと
 
         <br>
 
-        - `次の SNS トピックに通知を送信`
+        - `次の SNS トピックに通知を送信`: メッセージの発信先となるトピックを選択/作成
         
-            *SNSトピックについては[こちらを参照]()
+            *SNSトピックについては[こちらを参照](AmazonSNS.md)
 
     <img src="./img/CloudWatch-Billing-Alarm_11.png" />
     <img src="./img/CloudWatch-Billing-Alarm_12.png" />
@@ -153,19 +153,18 @@ AWS サービスリソースを監視するサービスのこと
 
     *トピック名とアラーム名は違う
 
+    - トピック名: Amazon SNS で管理する SNS トピックの名前
+    - アラーム名: CloudWatch で管理するアラームの名前
+
     <img src="./img/CloudWatch-Billing-Alarm_13.png" />
 
 <br>
 
-7. 最後に、プレビューで各設定項目への設定値を確認し、正しければ`アラームの作成`をクリック
+7. 最後にプレビューで各設定項目への設定値を確認し、正しければ`アラームの作成`をクリック
 
     <img src="./img/CloudWatch-Billing-Alarm_14.png" />
     <img src="./img/CloudWatch-Billing-Alarm_15.png" />
     <img src="./img/CloudWatch-Billing-Alarm_16.png" />
-
-
-
-
 
 <br>
 <br>

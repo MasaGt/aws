@@ -100,7 +100,69 @@ Subscriber
 
 ### 利用方法
 
-TODO: トピックの作成方法をまとめる
+1. AWS コンソールから Amazon SNS ダッシュボードに移動
+
+    <img src="./img/Amazon-SNS_1.png" />
+
+    <br>
+
+2. サイドメニューから `トピック` をクリックする
+
+    <img src="./img/Amazon-SNS_2.png" />
+
+    <br>
+
+3. `トピックの作成` をクリック
+
+    <img src="./img/Amazon-SNS_3.png" />
+
+    <br>
+
+4. 各項目を設定し、`トピックの作成` をクリック
+
+    <img src="./img/Amazon-SNS_4.png" />
+    <img src="./img/Amazon-SNS_5.png" />
+
+---
+
+### トピックの削除
+
+1. AWS コンソールから Amazon SNS ダッシュボードに移動
+
+    <img src="./img/Amazon-SNS_1.png" />
+
+    <br>
+
+2. サイドメニューから `トピック` をクリックする
+
+    <img src="./img/Amazon-SNS_2.png" />
+
+    <br>
+
+3. 削除したいトピックを選択し、 '削除' ボタンをクリック
+
+#### トピックに紐づいた Subscription の削除
+
+トピックを削除しても、サブスクリプションは削除されないらしい
+
+*AWS 公式では、トピックを削除すると、それに紐づいたサブスクリプションは非同期で自動的に削除されるらしい
+
+1. AWS コンソールから Amazon SNS ダッシュボードに移動
+
+2. サイドメニューから `サブスクリプション` を選択
+
+3. 削除したいサブスクリプションを選択して `削除` をクリック
+
+<br>
+<br>
+
+参考サイト
+
+トピックを削除するとサブスクリプションも削除されると主張する公式
+- [Amazon SNSトピックとサブスクリプションの削除](https://docs.aws.amazon.com/ja_jp/sns/latest/dg/sns-delete-subscription-topic.html)
+
+トピックを削除してもサブスクリプションは削除されないと主張するサイト
+- [SNS トピックを削除してもそこに関連づけられた SNS サブスクリプションは削除されない](https://dev.classmethod.jp/articles/deleting-sns-topic-does-not-delete-sns-subscriptions-associated-with-it/)
 
 ---
 
@@ -119,10 +181,34 @@ TODO: トピックの作成方法をまとめる
 
 など
 
-
 <br>
 <br>
 
 参考サイト
 
 [AWS SNSが重複してメッセージを配信してしまう](https://qiita.com/Ken_Fujimoto/items/2d82ac601507c651fb65)
+
+---
+
+### サブスクリプションが削除できない?
+
+サブスクリプションのステータスはいくつかある
+
+- 確認済み: サブスクライブ済み
+- 保留中の確認: エンドポイント側でまだサブスクライブしてない
+- 削除済み: Topic からのメッセージにあるサブスクリプション解約を押した 等
+
+上記の中で、`保留中の確認` と `削除済み` ステータスのサブスクリプションは手動で削除することはできない
+
+→ 48時間後に自動的に削除されるらしい
+
+<br>
+<br>
+
+参考サイト
+
+サブスクリプションの削除
+- [Amazon SNSトピックとサブスクリプションの削除](https://docs.aws.amazon.com/ja_jp/sns/latest/dg/sns-delete-subscription-topic.html)
+
+Subscription のステータスが削除済みになるには
+- [削除された SNS のサブスクリプションを再度サブスクライブすることができない場合の対処方法](https://dev.classmethod.jp/articles/tsnote-sns-deleted-status-resub/)
