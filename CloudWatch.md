@@ -217,3 +217,73 @@ CloudWatch Alarm の各項目の詳しい説明
 ---
 
 ### メトリクスの条件 ~ 異常検出とは
+
+アラームを作成する際、メトリクスの条件に `異常検出` というものが選択できる
+
+<img src="./img/CloudWatch-Anomaly-Detection_1.png" />
+
+特徴
+- 異常検出を有効にすると CloudWatch は統計アルゴリズムと機械学習アルゴリズムを利用して、Bandwidth(想定値の幅)を予測する
+
+    *Bandwidth = 下記画像のグレー部分
+
+    <img src="./img/CloudWatch-Anomaly-Detection_2.jpeg" />
+
+    <br>
+
+- 上記 Bandwidth に対してメトリクス値に条件(Bandwidth以上, 以下, 範囲外)を設定し、実際のメトリクス値によってアラームを送信することができる
+
+<br>
+
+注意点
+
+- 利用料金が静的条件のアラームよりも高い
+
+
+<br>
+<br>
+
+参考サイト
+
+異常検出機能について
+- [CloudWatch の異常検出機能を利用してアラームを作成する](https://dev.classmethod.jp/articles/cloudwatch-anomaly_detection/)
+
+- [AWS CloudWatchアラームを設定してみた](https://zenn.dev/myatti/articles/a4d6333ea9edf9#異常検出)
+
+異常検出にかかる料金
+- [え、そんなに！？意外と知らないAWSでお金がかかるポイント5選！！第3弾]()
+
+---
+
+### 利用料金
+
+- メトリクスにかかる利用料金
+
+    *今回は請求金額に関するメトリクスを利用したので1メトリクス利用した
+
+    - 10,000メトリクスまでは、1メトリクス 月額$0.30
+
+- アラームにかかる利用料金
+    - 静的かつ標準[解像度](#解像度とは)のアラームは 1アラームごとに $0.10
+
+
+#### 解像度とは
+
+- 1秒間隔や30秒間隔といった短い期間でメトリクス値を算出するメトリクス設定を高解像度と言われる
+
+- 高解像度のメトリクスを利用したアラームを高解像度アラームと呼ばれてるっぽい
+
+
+<br>
+<br>
+
+参考サイト
+
+CloudWatchの利用料金について
+- [AWS運用管理の定番！「Amazon CloudWatch」でできること](https://www.cloudsolution.tokai-com.co.jp/white-paper/2021/1101-267.html)
+
+メトリクスとアラームの解像度について
+- [【初心者向け】Amazon CloudWatch Alarmについてまとめてみた](https://blog.serverworks.co.jp/2023/01/16/102254)
+
+- [cloudwatch 概念について](https://qiita.com/miyuki_samitani/items/c8f7ce9d558ac870b296)
+
