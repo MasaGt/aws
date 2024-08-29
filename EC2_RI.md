@@ -270,6 +270,8 @@
 
 → これをキャパシティ不足という
 
+キャパシティは物理ホストのメモリの空き
+
 <img src="./img/EC2-Capacity-Reservation_1.png" />
 
 <br>
