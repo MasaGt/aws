@@ -5,10 +5,24 @@
 - インスタンスの起動時間
 
 - インスタンスのデータ転送料金
+    - 基本的にインスタンスが受信するデータ量には料金は発生しない
+
+    - 基本的にインスタンスが送信データ量に応じて課金が発生する
+
+    - 同じ AZ 内の　Amazon EC2、Amazon RDS、Amazon Redshift、Amazon ElastiCache などのインスタンスとのデータの送受信には料金は発生しない 
 
 - パブリック IP アドレスに対して発生する料金
     - Elastic IP でも　自動割り当てIPアドレスでも利用料金が発生するようになった
     - 1時間あたり 0.005USD → 1ヶ月あたり 500円ぐらい
+
+<br>
+<br>
+
+参考サイト
+
+[Amazon EC2 オンデマンド料金](https://aws.amazon.com/jp/ec2/pricing/on-demand/)
+
+[EC2に関わるデータ転送料金(IN/OUT)を図にしてみた](https://iret.media/94)
 
 ---
 
