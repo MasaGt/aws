@@ -55,7 +55,31 @@
 <br>
 
 - バックアップを取得できる
+    - 様々な方法のバックアップを利用できる
+    - 詳しくは[こちら](./DynamoDB_Backup.md)
 
+<br>
+
+- データの保存期間を決めることができる
+
+    - **TTL (Time to Live)属性**をアイテム(≒ レコード) に定義することでTTL属性に指定した期限になったら Dynamo 側で自動で削除してくれる
+
+    <br>
+
+    - *TTLで指定した期限が来たら**即座にアイテムが削除されるわけではない**。
+        - 48 時間以内に削除される
+
+        - 削除される際に RCU (書き込みキャパシティ) は消費されない
+
+        - データを読み込む際にアプリケーション側でデータ(アイテム)の有効期限をチェックしないと、有効期限を過ぎたデータを取得してしまう可能性がある
+
+    <br>
+
+    - TTL 属性は Number型で定義して、Unixtimeで値を格納する必要がある
+
+    <img src="./img/DynamoDB-TTL_1.png" />
+
+    引用: [初心者向け】Amazon DynamoDB 入門！完全ガイド](https://zenn.dev/issy/articles/zenn-dynamodb-overview#ttl（time-to-live）)
 
 <br>
 <br>
@@ -63,26 +87,13 @@
 参考サイト
 
 容量無制限について
-- [DynamoDBを使いこなして精神的安定を手に入れた]()
+- [DynamoDBを使いこなして精神的安定を手に入れた](https://qiita.com/walkers/items/9b39d752cc5b8df7b4b5)
 
+TTLについて
+- [初心者向け】Amazon DynamoDB 入門！完全ガイド](https://zenn.dev/issy/articles/zenn-dynamodb-overview#ttl（time-to-live）)
 
----
-
-### テーブルクラス
-
-- 標準テーブル
-    - 通常利用
-
-- 標準 IA
-    - アクセス頻度の低いデータ向け
-
----
-
-### キャパシティモード
-
-- プロビジョンド
-
-- オンデマンド
+バックアップについて
+- [DynamoDB のバックアップとリストアについて](https://zenn.dev/htnk128/articles/092cbfc7a886fd#ポイントインタイムリカバリ(pitr))
 
 ---
 
@@ -102,7 +113,11 @@
 
 ---
 
-### 読み取りユニットと書き込みユニット
+### キャパシティユニット
+
+★ DynamoDB ではデータの書き込み/読み取りに[キャパシティユニット](./DynamoDB_CapacityUnit.md)と言うものを消費し、それがテーブルの性能やコストに関係してくる
+
+詳しくは[こちら](DynamoDB_CapacityUnit.md)を参照
 
 ---
 
