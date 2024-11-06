@@ -202,7 +202,9 @@ Protection Group について
 <br>
 
 - バックトラック
+    - ★ **Aurora MySQL のみ利用可能**
     - DBクラスタを過去の状態に巻き戻す機能
+    - スナップショットから復元するわけではないので、バックアップを取得する以前の状態にも復元可能
     - ポイントインタイムリカバリ (PITR) も特定の時点への DB クラスターの復元する機能だが、**バックトラックとは異なり、別のクラスターとして再作成してしまう**
 
 <br>
@@ -219,7 +221,7 @@ Protection Group について
 
 <br>
 
-- Auroraグローバルデータベース
+- Aurora グローバルデータベース
     - 通常、 Aurora クラスターは単一リージョンに構築されるが、グローバルデータベースを利用すると複数リージョンにまたがって Aurora DB クラスターを構築できる
 
     - プライマリインスタンスがあるリージョンをプライマリリージョン、その他のリージョンをセカンダリーリージョンと呼ぶ
@@ -314,6 +316,7 @@ Protection Group について
 - ストレージに対する使用料
     - 1GB あたり \~~ USD での課金方式
     - リージョンによって金額が異なる
+    - ★ 6つのストレージ分ではなく、**1ストレージ分の料金が発生する**
 
     <img src="./img/RDS-Aurora-Cost_2.png" />
 
@@ -324,25 +327,94 @@ Protection Group について
 - I/O リクエスト数に対する課金
     - 100万リクエストあたり \~~ USD での課金方式
     - リージョンによって金額が異なる
+    - ★ 6つのストレージ分ではなく、**1ストレージ分の料金が発生する**
 
     <img src="./img/RDS-Aurora-Cost_3.png" />
 
     引用: [Amazon Aurora の料金](https://blog.serverworks.co.jp/aurora-estimate#データベースストレージおよびIO)
+
+    <br>
+
+    - ★ I/O のカウントは**ストレージへの1回の読み込み、1回の書き込みでそれぞれ1 I/Oとは限らない**
+
+        - 1回の**データベースページ**の読み取りで 1 I/O とカウントされる
+            - データベースページについては[こちら](https://atmarkit.itmedia.co.jp/ait/articles/0405/19/news089.html)を参照
+        
+        <br>
+
+        - 1回の書き込みで Redo ログが 4KB 以内の場合 1 I/O とカウントされる
+            - 4KB 以上の場合は複数回の I/O が実行される
 
 <br>
 
 #### 2つの料金体系
 
 - Aurora Standard
+    - 上記の[基本コスト](#基本コスト)が発生する通常の料金体系
+
+<br>
 
 - Aurora I/O 最適化
+    - 「ストレージの費用が 2.25 倍に増える」 + 「インスタンスの使用料金が1.3倍に増える」 代わりに I/O リクエスト費用が無料になる料金体系
+    - Aurora請求金額の中で I/O の比重が大きい場合にこちらの料金体系に切り替えるとコストを抑えることができる場合もある　by [こちらの記事](https://zenn.dev/neinc_tech/articles/604b2687ee015d)
 
 <br>
 
+#### その他費用
+
+- バックアップ
+    - 他の RDS と同じ
+    - [こちら](./RDS_Backup.md#コスト)を参照
+
+<br>
+
+- バックトラック
+    - バックトラックによって変更されたレコード100万件あたり \~~ USD での課金方式
+    - リージョンによって金額が異なる
+
+<br>
+
+- Aurora グローバルデータベース
+    - セカンダリリージョンで起動しているインスタンスの使用料金が発生する
+    - 同様に、セカンダリリージョンでのストレージおよび I/O リクエスト (セカンダリリージョンではリードレプリカのみなので読み込み I/O) にも料金が発生する
+    - プライマリリージョンの変更をセカンダリリージョンにレプリケーションする際の書き込み I/O 100万件あたり \~~ UDS の形で料金が発生する
+
+    <img src="./img/RDS-Aurora-Global-Database-Cost_1.png" />
+
+<br>
+
+- クローン
+    - クローンクラスター内の RDS インスタンス使用料が発生する
+    - クローンクラスターの RDS によって作成されるストレージには使用料金が発生する
+    - クローンクラスターの RDS による I/O リクエストにも料金が発生する
+
+    <img src="./img/RDS-Aurora-Clone-Cost_1.png" />
+
+<br>
+
+- データ転送
+    - 他の RDS と同じ
+    - [こちら](./RDS.md#料金)を参照
+
+    <img src="./img/RDS-Aurora-Data-Transfer-Cost_1.png" />
+
 <br>
 <br>
+
 参考サイト
 
-[Amazon Aurora の料金](https://blog.serverworks.co.jp/aurora-estimate#データベースストレージおよびIO)
+料金全般について
+- [Amazon Aurora の料金](https://blog.serverworks.co.jp/aurora-estimate)
 
-[Amazon AuroraのIO関連で見るべき指標](https://zenn.dev/tommyasai/articles/ef94f6f4fab7df#iopsとは)
+- [AWS再入門ブログリレー Amazon Aurora 編](https://dev.classmethod.jp/articles/re-introduction-2020-amazon-aurora/#toc-13)
+
+I/O リクエストについて
+- [Amazon Aurora のよくある質問 - Aurora の I/O オペレーションとは何ですか? どのように計算されるのですか?](https://aws.amazon.com/jp/rds/aurora/faqs/#What_are_I.2FO_operations_in_Aurora_and_how_are_they_calculated.3F)
+
+- [Amazon AuroraのIO関連で見るべき指標](https://zenn.dev/tommyasai/articles/ef94f6f4fab7df#iopsとは)
+
+Aurora I/O 最適化について
+- [Amazon Aurora I/O-Optimized で Aurora のコスト最適化を実際に行った結果](https://blog.serverworks.co.jp/results-of-actual-cost-optimization-for-amazon-aurora-with-io-optimized#IO-リクエストが請求で問題になる場合)
+
+クローンの I/O 料金について言及している記事
+- [Planning I/O in Amazon Aurora](https://aws.amazon.com/jp/blogs/database/planning-i-o-in-amazon-aurora/)
