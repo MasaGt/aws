@@ -110,42 +110,117 @@ RDS のフェイルオーバー時間の短縮について
 
 - RDS Proxy を利用するリージョンによってコストが異なる
 
-- RDS Proxy を利用する RDS のインスタンスタイプ(vCPUの数)によって、最終的なコストが違ってくる
-    - (RDS が Amazon Aurora Serverless v2 以外の場合) リージョンのプロビジョニングインスタンスの料金 × RDS のインスタンスの vCPU 数 × 時間
-    - たとえ利用する RDS のインスタンスタイプの vCUP の数が1でも、**RDS Proxy の利用には最低でも 2vCPU分 の課金が発生する**
+#### 非 Aurora RDS の場合
 
-- 1時間あたり ~~ UDS の形の料金形態
+- RDS Proxy を利用する RDS のインスタンスタイプの **vCPU 数**によって、最終的なコストが違ってくる
+
+    - RDS のインスタンスの vCPU 数 × 時間
+
+    - ★たとえ Proxy に接続する RDS のインスタンスタイプの vCUP の数が1でも、**RDS Proxy の利用には最低でも 2vCPU分 の課金が発生する**
+
+- 1時間あたり ~~ USD の形の料金形態
+
+<br>
+
+#### 非サーバーレスの Aurora の場合
+
+- RDS proxy は接続先に RDS DB インスタンス、Aurora DB クラスターを設定できる
+
+    <img src="./img/RDS-Proxy_2.avif" />
+
+    <br>
+
+- Aurora DB クラスターに接続すると、料金は**クラスター内の全ての DB インスタンスの総 vCUP 数** × 時間で計算される
+
+- ★ たとえ利用する RDS のインスタンスタイプの vCUP の数が1でも、**RDS Proxy の利用には最低でも 2vCPU分 の課金が発生する**
+
+
+<br>
+
+#### Serverless の場合
+
+- RDS proxy は接続先に、 RDS DB インスタンス、Aurora DB クラスターを設定できる
+
+- Aurora DB クラスターに接続すると、料金は**クラスター内の全ての DB インスタンスの総 ACU 数** × 時間で計算される
+
+- ★ たとえ利用する RDS のインスタンスの ACU が 1 ACU でも、**RDS Proxy の利用には最低でも 8ACU分 の課金が発生する**
 
 <br>
 
 #### 練習
 
-- バージニア北部リージョンに作成した RDS (Amazon Aurora Serverless v2 以外) のインスタンスタイプが db.t2.large (2vCPU) の場合、 RDS Proxy の利用料金は1時間あたりいくらか?
+1. バージニア北部リージョンに作成した RDS のインスタンスタイプが db.t2.large (2vCPU) の場合、 RDS Proxy の利用料金は1時間あたりいくらか?
 
     ```
     [ポイント]
         - リージョンはバージニア北部
-        - Amazon Aurora Serverless v2 ではない = プロビジョニングインスタンス
+        - プロビジョニングインスタンス
         - RDS のインスタンスタイプの vCPU は2
 
     よって
-    0.015 (バージニア北部) × 2 (vCPU) = 0.03 UDS / h かかる
+    0.015 (バージニア北部) × 2 (vCPU) = 0.03 USD / h かかる
     ```
 
 <br>
 
-- 東京リージョンに作成した RDS (Amazon Aurora Serverless v2 以外) のインスタンスタイプが db.t2.small (1vCPU) の場合、 RDS Proxy の利用料金は1時間あたりいくらか?
+2. 東京リージョンに作成した RDS のインスタンスタイプが db.t2.small (1vCPU) の場合、 RDS Proxy の利用料金は1時間あたりいくらか?
 
-    - RDS のインスタンスタイプの vCPU の数が1でも **RDS Proxy の利用には最低でも 2vCPU分 の課金が発生する**
+    - ★ RDS のインスタンスタイプの vCPU の数が1でも **RDS Proxy の利用には最低でも 2vCPU分 の課金が発生する**
 
     ```
     [ポイント]
         - リージョンは東京
-        - Amazon Aurora Serverless v2 ではない = プロビジョニングインスタンス
+        - プロビジョニングインスタンス
         - RDS のインスタンスタイプの vCPU は1だが、RDS Proxy には最低でも 2vCPU 分の課金が発生する
 
     よって、
-    0.018 (東京) × 2 (vCPU) = 0.036 UDS / h かかる
+    0.018 (東京) × 2 (vCPU) = 0.036 USD / h かかる
+    ```
+
+<br>
+
+3. バージニア北部リージョンに作成した Aurora DB クラスターに RDS Proxy を接続した。 Aurora DB クラスターの構成は db.r5.large (2vCPU) のプライマリと同じインスタンスタイプの2つのリードレプリカである。RDS Proxy の利用料金は1時間あたりいくらか?
+
+    ```
+    [ポイント]
+        - リージョンはバージニア北部
+        - プロビジョニングインスタンス
+        - 各 RDS のインスタンスタイプの vCPU は2
+        - Aurora クラスターに接続する = クラスター内の総 vCPU 数は 2 * 3 = 6 vCPU
+
+    よって、
+    0.015 (バージニア北部) × 6 (vCPU) = 0.09 USD / h かかる
+    ```
+
+<br>
+
+4. 東京リージョンに作成した Aurora DB クラスターに RDS Proxy を接続した。Aurora DB クラスターの構成は Serverless v2 のプライマリと同じくServerless v2 の2つのリードレプリカである。RDS インスタンスの平均 ACU は 10 ACUである。RDS Proxy の利用料金は1時間あたりいくらか?
+
+    ```
+    [ポイント]
+        - リージョンは東京
+        - インスタンスは Serverless v2
+        - Aurora クラスターに接続 = クラスター内の総 ACU 数は 10 * 3 = 30 ACU
+
+    よって、
+    0.025 (東京) × 30 (ACU) = 0.75 USD / h かかる
+    ```
+
+<br>
+
+5. バージニア北部リージョンに作成した Aurora DB クラスターに RDS Proxy を接続した。Aurora DB クラスターの構成は Serverless v2 のプライマリと同じくServerless v2 の2つのリードレプリカである。RDS インスタンスの平均 ACU は 1 ACUである。RDS Proxy の利用料金は1時間あたりいくらか?
+
+    - ★ たとえ利用する RDS のインスタンスの ACU が 1 ACU でも、**RDS Proxy の利用には最低でも 8ACU分 の課金が発生する**
+
+    ```
+    [ポイント]
+        - リージョンはバージニア北部
+        - インスタンスは Serverless v2
+        - Aurora クラスターに接続 = クラスター内の総 ACU 数は 1 * 3 = 3 ACU
+        - 最低でも 8ACU分 の課金が発生する
+
+    よって、
+    0.015 (バージニア北部) × 8 (ACU) = 0.12 UDS / h かかる
     ```
 
 <br>
