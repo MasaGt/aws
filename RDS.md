@@ -84,6 +84,10 @@ A. EC2 でサーバーを作成した後、対象の RDBMS のインストール
 
     <br>
 
+    - ★ 6時間以内に連続してストレージ容量の拡張はできない
+
+    <br>
+
     - 拡張上限は設定した最大ストレージしきい値
         - 最大ストレージサイズは 64 TiB (利用する DB エンジンのバージョンによって異なる)
 
@@ -100,15 +104,24 @@ A. EC2 でサーバーを作成した後、対象の RDBMS のインストール
 
 参考サイト
 
-[Amazon RDSとは？3分でわかる用語解説](https://www.itechh.ne.jp/blog/column/amazon-rds.html)
+RDS の機能全般について
+- [Amazon RDSとは？3分でわかる用語解説](https://www.itechh.ne.jp/blog/column/amazon-rds.html)
 
-[Amazon RDSとは？仕組み、特徴、メリット、DBの種類や使い方をわかりやすく解説](https://www.ashisuto.co.jp/db_blog/article/amazon-rds.html#Index-1)
+- [Amazon RDSとは？仕組み、特徴、メリット、DBの種類や使い方をわかりやすく解説](https://www.ashisuto.co.jp/db_blog/article/amazon-rds.html#Index-1)
 
-[Amazon RDS リソースの暗号化](https://docs.aws.amazon.com/ja_jp/AmazonRDS/latest/UserGuide/Overview.Encryption.html)
+RDS の暗号化について
+- [Amazon RDS リソースの暗号化](https://docs.aws.amazon.com/ja_jp/AmazonRDS/latest/UserGuide/Overview.Encryption.html)
 
-[【AWS】RDS暗号化の仕組み](https://avocado-system.com/2023/05/17/【aws】rds暗号化の仕組み/)
+- [【AWS】RDS暗号化の仕組み](https://avocado-system.com/2023/05/17/【aws】rds暗号化の仕組み/)
 
-[Aurora DB クラスターのパフォーマンスとスケーリングの管理](https://docs.aws.amazon.com/ja_jp/AmazonRDS/latest/AuroraUserGuide/Aurora.Managing.Performance.html)
+RDS のストレージの自動スケーリングについて
+- [Aurora DB クラスターのパフォーマンスとスケーリングの管理](https://docs.aws.amazon.com/ja_jp/AmazonRDS/latest/AuroraUserGuide/Aurora.Managing.Performance.html)
+
+- [【AWS】RDS自動スケーリングが発表されたけど注意事項があるので検証した話](https://qiita.com/hedgehog051/items/7f1065a9a6510764bb6c)
+
+- [Amazon RDS_DBインスタンスのストレージサイズを縮小するには　 #374](https://note.com/ym202110/n/n10a593051e51)
+
+- [【Amazon RDS】RDSのオートスケーリングについて](https://qiita.com/tireidev/items/3880a8da8a29e4c8d8f0)
 
 ---
 
