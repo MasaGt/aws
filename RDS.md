@@ -191,6 +191,7 @@ RDS インスタンス作成後にインスタンスが配置された AZ を確
 #### 非 Aurora RI
 
 - 指定する項目
+
     <img src="./img/RDS-RI_1.png" />
 
     - DBエンジン
@@ -224,14 +225,47 @@ RDS インスタンス作成後にインスタンスが配置された AZ を確
 
 <br>
 
+- ★ RDS の構成が [Multi-AZ DB Instances](#multi-az-db-instances) や [Multi-AZ DB Cluster](#multi-az-db-cluster) の場合はどのように RI を購入すれば良いか?
+
+    - 基本的にはどちらの構成でも、 RDS インスタンスの同じ数だけ シングル AZ RI を購入すれば良い
+
+    - マルチ AZ RI は 指定したインスタンスクラスを2つ (プライマリとスタンバイ分) 購入するオプションと思えば良い
+
+<br>
+
 - ★ 購入したRI の DB エンジンが 「RDS for SQL Server」 または 「RDS for Oracle ライセンス込み」 の場合は、**RI のサイズの柔軟性は提供されない**
 
-    → サイズの柔軟性とは、[EC2 のリージョンを指定して購入する RI](./EC2_RI.md#インスタンスサイズの柔軟性) と同様に、リージョンとインスタンスファミリーが同じであれば、購入済みの RI とは異なるサイズのインスタンスに割引が自動で適用される仕組み
+    → サイズの柔軟性とは、[EC2 のリージョンを指定して購入する RI](./EC2_RI.md#インスタンスサイズの柔軟性) と同様に、リージョンとインスタンスファミリーが同じであれば、購入済みの RI とは異なるサイズのインスタンスに割引が自動で適用される仕組み (**柔軟性は小さいインスタンスクラスのインスタンスから適用される**)
+    
+
+<br>
+
+#### Aurora RI
+
+- 基本的に非 Aurora RI と同じ指定項目、RIの柔軟性が提供される
+
+- ★ Serverless の RI は無い
+
+- ★ 料金体系によって購入するべき RI の数に違いが出る
+
+    - [Aurora I/O 最適化](./RDS_Aurora.md#2つの料金体系) の場合、インスタンス使用料が 1.3 倍に増加するので、購入する RI の数も1.3倍必要になる
+
+    - RI は少数を含んだ個数の購入 (0.5個や1.5個など) はできない 
+
+<br>
+
+#### 練習問題
+
+1. SQL Server インスタンスに対して RI の購入のケース
 
     ```
-    例: インスタンスタイプが db.t3.2xarge で シングル AZ の SQL Server の RI を購入。その後、SQL Server の RDS インスタンスをdb.t3.large でマルチ AZ 配置に変更した。
+    SQL Server RDS を db.t3.2xarge で作成し、インスタンスタイプが db.t3.2xarge で シングル AZ の SQL Server の RI を購入。その後、SQL Server の RDS インスタンスをdb.t3.large でマルチ AZ 配置に変更した。
+
+    ---------------------------
 
     Q: 変更後も RI の割引は適用されるか?
+
+    ---------------------------
 
     A: SQL Server の RI はサイズの柔軟性が無いため、SQL Server の RDS インスタンスサイズを変更すると、RI の割引は適用されなくなる
     ```
@@ -240,19 +274,153 @@ RDS インスタンス作成後にインスタンスが配置された AZ を確
 
 <br>
 
-#### Aurora RI
+2. Multi-AZ DB Instances 構成の MySQL インスタンスに対して RI の購入ケース
 
-- 基本的に非 Aurora RI と同じ指定項目、インスタンスサイズの柔軟性、AZの柔軟性が提供される
+    ```
+    MySQL RDS インスタンスを以下のマルチ DB インスタンス構成で作成した
+    - プライマリ: db.r3.large
+    - リードレプリカ: db.r3.large
 
-- ★ Serverless の RI は無い
+    ---------------------------
 
-- ★ 料金体系による RI の購入数の違い
+    Q: どのように RI を購入すれば良いか?
 
+    ---------------------------
+
+    A1: シングル AZ の db.r3.large RI を2つ購入する
+
+    ---------------------------
+
+    A2: マルチ AZ の db.r3.large RI を1つ購入する
+    ```
+
+    <img src="./img/RDS-RI_3.png" />
+
+<br>
+
+3. Multi-DB Cluster 構成の PostgreSQL  インスタンスに対しての RI の購入ケース
+
+    ```
+    MySQL RDS インスタンスを以下のマルチ DB クラスター構成で作成した
+    - プライマリ: db.r6g.4xlarge
+    - リードレプリカ1: db.r6g.4xlarge
+    - リードレプリカ2: db.r6g.4xlarge
+
+    ---------------------------
+
+    Q: どのように RI を購入すれば良いか?
+
+    ---------------------------
+
+    A1: シングル AZ の db.r6g.4xlarge RI を3つ購入する
+
+    ---------------------------
+
+    A2: マルチ AZ の db.r6g.4xlarge RI を1つ購入 & シングルAZ の db.r6g.4xlarge RI を1つ購入する
+    ```
+
+    <img src="./img/RDS-RI_4.png" />
+
+<br>
+
+4. Aurora Standard で作成した Aurora クラスターに対する RI の購入ケース
+
+    ```
+    Aurora MySQL クラスターを以下の構成で構成した
+    - プライマリ: db.r5.large
+    - リードレプリカ1: db.r5.large
+    - リードレプリカ2: db.r5.large
+
+    ---------------------------
+
+    Q: どのように RI を購入すれば良いか?
+
+    ---------------------------
+
+    A1: シングル AZ の db.r5.large RI を3つ購入する
+
+    ---------------------------
+
+    A2: マルチ AZ の db.r6g.4xlarge RI を1つ購入 & シングルAZ の db.r6g.4xlarge RI を1つ購入する
+    ```
+
+    <img src="./img/RDS-RI_5.png" />
+
+<br>
+
+5. Aurora I/O 最適化で作成した Aurora クラスターに対する RI の購入ケース1
+
+    
+    ```
+    Aurora I/O 最適化で Aurora PostgreSQL クラスターを以下の構成で構成した
+    - プライマリ: db.r6g.large
+    - 9台のリードレプリカ: db.r6g.large
+
+    ---------------------------
+
+    Q: どのように RI を購入すれば良いか?
+
+    ---------------------------
+
+    A1: シングルAZ の db.r6g.large RI を 10 * 1.3 = 13台購入する必要がある
+
+    ---------------------------
+
+    A2: マルチAZ の db.r6g.large を4 * 1.3 = 5.2台 + シングルAZ の db.r6g.large を 2 * 1.3 = 2.6台購入
+
+    →シングルAZ の db.r6g.large RI を13台購入する場合と同じ結果になる
+    ```
+
+    <img src="./img/RDS-RI_6.png" />
+
+<br>
+
+6. Aurora I/O 最適化で作成した Aurora クラスターに対する RI の購入ケース2
+
+    ```
+    Aurora I/O 最適化で Aurora PostgreSQL クラスターを以下の構成で構成した
+    - プライマリ: db.r6g.large
+    - 2台のリードレプリカ: db.r6g.large
+
+    ---------------------------
+
+    Q: どのように RI を購入すれば良いか?
+
+    ---------------------------
+
+    A1: シングルAZ の db.r6g.large RI を 3 × 1.3 = 3.9台
+
+    → ★ 3つの db.r6g.large RI を購入 + 0.9台の db.r6g.large のフットプリントをカバーできるような同じインスタンスファミリーのRIを購入すれば良い
+
+        → 0.9台の db.r6g.large フットプリントは 0.9 (台) × 4 (db.r6g.largeのフットプリント) = 3.2
+
+        以下の RI の購入でフットプリント14をカバーすることができる
+        - 1つの db.r6g.medium RI (フットプリント2)
+        - 1つの db.r6g.small RI (フットプリント1)
+
+    残り0.2台分は db.r6g.large オンデマンド料金が請求される
+
+    ---------------------------
+
+    A2: マルチAZ の db.r6g.large RI を 1.3つ + シングルAZ の db.r6g.large RI を 1.3つ
+
+    →結果はシングルAZ の db.r6g.large RI を 3.9つ購入した場合と同じ
+    ```
+
+    <img src="./img/RDS-RI_7.png" />
 
 <br>
 <br>
 
 参考サイト
 
-[]()
-[]()
+非 Aurora RDS の RI について
+- [Amazon RDS 向けリザーブド DB インスタンス](https://docs.aws.amazon.com/ja_jp/AmazonRDS/latest/UserGuide/USER_WorkingWithReservedDBInstances.html)
+
+Aurora RDS の RI について
+- [Amazon Aurora 向けリザーブド DB インスタンス](https://docs.aws.amazon.com/ja_jp/AmazonRDS/latest/AuroraUserGuide/USER_WorkingWithReservedDBInstances.html)
+
+Aurora I/O 最適化 料金プランでの RI について
+- [Amazon Aurora I/O-Optimized で Aurora のコスト最適化を実際に行った結果](https://blog.serverworks.co.jp/results-of-actual-cost-optimization-for-amazon-aurora-with-io-optimized)
+
+- [Aurora I/O 最適化での Aurora Standard リザーブドインスタンスの使用例](Examples_of_using_Aurora_Standard_Reserved_Instances_with_Aurora_I.2FO-Optimized)
