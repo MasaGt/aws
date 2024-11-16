@@ -28,7 +28,6 @@
 
 引用: [サーバーレスとは？](https://blog.serverworks.co.jp/2022/08/05/131624)
 
-
 <br>
 
 #### 利用例
@@ -641,5 +640,46 @@
 
 ---
 
-### リザーブドインスタンス (RI) と Savings Plan (SP)
+### Savings Plans (SP)
+
+- [EC2 の Savings Plans](./EC2_Savings-Plans.md) のように一定期間にわたってコンピューティングリソース1時間あたりの利用料金を払い続けることで割引を受けることができる購入方法
+
+    -  Lambda の場合は最大 17% の割引を受けることができる
+
+    - SP は `Cost Explorer` 画面のサイドメニューにある `Savings Plans` → `Savings Plansの購入` から購入することができる
+
+    <img src="./img/Savigs-Plans_1.png" >
+
+<br>
+
+- ★ Lambda で購入できる SP は [Compute Savings Plans](./EC2_Savings-Plans.md) のみ
+
+    <img src="" />
+
+<br>
+
+- Lambda の SP で割引が適用されるのは実行時間料金と Provisioned Concurrency 系の料金のみ
+
+    - リクエスト数に対する料金やストレージ使用料には割引は適用されない
+
+    <img src="./img/Lambda-Savings-Plans_1.png" />
+
+<br>
+
+#### 注意点
+
+- Savings Plans (Compute Savings Plans) を購入した場合、他のリソース (EC2 や Fargate) がち稼働中かつそれらの方が割引率が高ければ Lambda でなくそちらに割引が優先的に適用される
+
+    - [こちらの記事の説明](https://blog.jicoman.info/2020/04/understanding-how-savings-plans-apply-to-aws-usage/)がわかりやすい
+
+<br>
+<br>
+
+参考サイト
+
+[Lambda利用費が最大17%OFF!!Savings PlansがLambda Function実行時間に対応しました](https://dev.classmethod.jp/articles/savings-plan-update-save-up-to-17-on-your-lambda-workloads/)
+
+[Savings Plans](https://aws.amazon.com/jp/savingsplans/compute-pricing/)
+
+[【AWS】Savings Plans がどのように適用されるのかを理解する](https://blog.jicoman.info/2020/04/understanding-how-savings-plans-apply-to-aws-usage)
 
