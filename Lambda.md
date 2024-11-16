@@ -89,6 +89,7 @@
 <br>
 
 #### エイリアス
+
 - Lambda 関数の特定のバージョンにつける別名
 
     - 1つのエイリアスは最大で 2つのバージョンにつけることが可能
@@ -111,7 +112,38 @@
 
 #### extensions
 
-- TODO: extensions について追記する
+- 拡張機能
+    - アプリケーションのモニタリングやログ収集機能を追加するツールやアプリケーションのこと
+
+    - extensions を利用すればアプリケーションコードの変更なしに、上記のような機能を追加することができる
+
+<br>
+
+- Internal Extensions と
+ External Extensions
+    
+    <img src="./img/Lambda-Extensions_1.png" />
+
+    引用: [Power up your serverless application with AWS Lambda extensions](https://dev.to/slsbytheodo/power-up-your-serverless-application-with-aws-lambda-extensions-3a31)
+
+    - **Internal Extensions**
+        - 実行環境内においてプログラムコードと同じプロセスで実行される
+
+        - Invoke フェーズ中に実行される
+            - Lambda のライフサイクルに関しては[こちら](https://docs.aws.amazon.com/ja_jp/lambda/latest/dg/lambda-runtime-environment.html)を参照
+
+    <br>
+
+    - **External Extensions**
+        - 実行環境内においてプログラムコード (Lambda関数) とは独立したプロセスとして実行される
+
+        - プログラムコード前に動作を開始でき、プログラムコード終了後も動作を継続できる
+
+<br>
+
+- internal / external extensions を利用する場合は、利用したい exntension を[レイヤー](#レイヤー)に追加する必要がある
+
+    - 1レイヤーに複数の extension を含めることができ、 1つの Lambda 関数に最大で 10 の extensions を設定することができる　
 
 <br>
 
@@ -156,13 +188,15 @@
 
     - ★実行環境がどのぐらいの期間残るのかを設定することはできない
 
+<br>
+
 - ウォームスタートの注意点
 
     - Lambda 関数の同時実行数によっては、新たにコールドスタートされるものもある
 
         <img src="./img/Lambda-Cold-Warm-Start_2.png" />
 
-        <br>
+    <br>
 
     - 実行環境が複数残っている場合、同じクライアントが再び同じ Lambda 関数を呼び出したとしても、前回と同じ実行環境が使用されるとは限らない
 
@@ -179,9 +213,16 @@
 - [Lambdaの同期・非同期処理の理解](https://zenn.dev/mi_01_24fu/books/d91d10985a5a1a/viewer/lambda_synchronous_asynchronous#前提%3A-lambdaに非同期処理は存在する？)
 - [そのLambdaの実行…同期？非同期？](https://qiita.com/is_ryo/items/009220083e179272cbda)
 
+extensions について
+- [Lambda 関数のログをLambda Extensionsを利用してS3に出してみた](https://qiita.com/horit0123/items/c3e44ba4a54e7fc938d2#internal-extensions-external-extensions)
+- [Lambda Extensionsは何が嬉しいのか](https://dev.classmethod.jp/articles/cons-of-lambda-extensions/)
+- [AWS Lambda の Extension API を使いたいがために Go で Lambda Extension を自作してみた](https://michimani.net/post/aws-lambda-extension-written-in-go/)
+
 コールド/ウォームスタートについて
 - [AWS Lambda 関数の実行の仕組みを知ろう !](https://aws.amazon.com/jp/builders-flash/202308/learn-lambda-function-execution/)
 - [サーバレス時代の必須技術、AWS Lambdaを知ろう](https://www.itis.nssol.nipponsteel.com/blog/aws-lambda-01.html)
+- [Lambdaの実行環境について(コールドスタートとウォームスタート)](https://zenn.dev/yoshii0110/articles/0d50e872b64f59)
+- [Operating Lambda: パフォーマンスの最適化 – Part 1](https://aws.amazon.com/jp/blogs/news/operating-lambda-performance-optimization-part-1/)
 
 ---
 
@@ -220,7 +261,6 @@
     <br>
 
 - Provisioned Concurrency の利用には追加料金がかかる
-
 
 <br>
 
@@ -285,7 +325,6 @@
 
 - 割り当てることのできるストレージの最大サイズは 10,240 MB (≒ 10GB)
 
-
 <br>
 <br>
 
@@ -305,6 +344,10 @@
 - [AWS SignerとLambdaによるコード検証](https://qiita.com/uirole/items/0f468add6b36a8732b25)
 - [AWS Signerでコード署名についてまとめてみた](https://speakerdeck.com/atsuw0/aws-signertekotoshu-ming-nituitematometemita)
 
+制約について
+- [AWS Lambdaのストレージ容量が最大10GBまで拡張可能になりました](https://dev.classmethod.jp/articles/aws-lambda-10gb-storage/)
+- [[アップデート]Lambdaのメモリ上限が10G、vCPUの上限が6に拡張されました！！ #reinvent](https://dev.classmethod.jp/articles/lambda-memory-limit-inclease-to-10g/)
+
 ---
 
 ### コスト
@@ -312,6 +355,8 @@
 - Lamda を作成しただけでは料金は発生しない
 
 - 主に実行時間に対して料金が発生する
+    - 実行時間 = 初期化フェーズ (実行環境の作成や初期化) から、シャットダウンフェーズまでの時間
+
     - その他にも、リクエスト数やストレージなどにも料金が発生する
 
 - 利用するリージョンによって金額が異なる
