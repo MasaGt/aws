@@ -224,18 +224,77 @@
 
 - 1つのイベントソースと1つのターゲットを繋ぐバージョンの[イベントバス](#イベントバス)みたいなもの
 
+- イベントバストの違いは何か?
+
+    - パイプのイベントソースに設定できるのは**メッセージングやイベントデータを取り扱う** AWS サービス　(SQS や DynamoDB Stream など)
+
+        <img src="./img/EventBridge-Pipes_1.png" />
+
+        引用: Amazon EventBridge Pipesを使ってEventBridge内でフィルタリングしてみる](https://blog.serverworks.co.jp/2022/12/13/134812)
+
+    <br>
+
+    - パイプ無しだと Lambda で上記サービスイベントをポーリングしていたらしい
+    
+        <img src="./img/Lambda-SQS_1.webp" />
+
+        引用: [プライベートな Lambda 関数で SQS をイベントソースに設定しても Lambda 関数は動作しないと勘違いしていた話](https://dev.classmethod.jp/articles/sqs-to-vpclambda/)
+
+- イベントフィルタリング
+
+    - イベントバスに設定する[ルール](#ルール)のように特定のイベントのみをターゲットに発信できる機能
+
+- エンリッチメント
+
+    - ターゲットに送信前にイベントデータのペイロード部分を加工する機能
+
+        - 例: イベントソースからイベントを受け取ったら、EventBridge Pipes にて API Gateway を呼び、返却されたデータをイベントデータに付け加えてターゲットに発信する
+
+            <img src="./img/EventBridge-Pipes_2.png">
+
+            引用: [Introduction to EventBridge Pipes](https://majestic.cloud/introduction-to-eventbridge-pipes/)
+
 - パイプとイベントバスを一緒に使うこともできる
+
     - パイプのターゲットにイベントバスを設定するようなユースケース
 
-- TODO: イベントバストの違いは何か?
+- パイプの利用には料金が発生する 
 
 <br>
 
 #### スケジューラー
 
+- スケジュールによる定義する[ルール](#ルール)の上位互換版
+
+- 様々なタイムゾーンをサポートしている
+
+- 1回限りのスケジュールの設定も可能
+
+- スケジューラーの利用には料金が発生する
+
 <br>
 
 #### グローバルエンドポイント
+
+<img src="./img/EventBridge-Global-Endpoint_1.webp" />
+
+引用: [Amazon EventBridge にイベントを別リージョンに自動でフェイルオーバーするグローバルエンドポイントが追加されました](https://dev.classmethod.jp/articles/amazon-eventbridge-global-endpoints-automatic-failover-recovery/)
+
+<br>
+
+- イベントの配信先をセカンダリリージョンのイベントバスに自動でフェイルオーバーできる機能
+
+- イベントを常時セカンダリリージョンにレプリケーションすることもできる
+
+- グローバルエンドポイントの利用には [Route 53 ヘルスチェック](./Route53.md#route-53-ヘルスチェック) の作成と プライマリリージョンで `IngestionToInvocationStartLatency` をモニタリングする CloudWatch Alarm の作成が必要
+
+    - `IngestionToInvocationStartLatency`: イベントがAmazon EventBridgeに取り込まれてから、ルールの中でターゲットが最初に呼び出されるまでの処理時間のメトリクスのこと
+
+- ターゲットは PutEvent というアクションでグローバルエンドポイントににイベントを送信する必要がある
+
+- ★ グローバルエンドポイントには追加料金はかからないが以下の料金は発生する
+
+    - グローバルエンドポイントはカスタムイベントのみに使用なので、グローバルエンドポイントからそイベントバスに送信されたカスタムイベントの件数分カスタムイベント数に対する料金が発生する
 
 <br>
 
@@ -253,9 +312,15 @@
 
 - アーカイブしたイベントを再送信することができる機能
 
+- イベントリプレイの利用には料金が発生する
+
 <br>
 
 #### API Destinations
+
+- EventBridge イベントバスから任意の外部APIにイベントを送信することができる機能
+
+- API Destination の利用には料金が発生する
 
 <br>
 <br>
@@ -267,6 +332,12 @@
 
 スキーマレジストリについて
 - [[AWS Black Belt Online Seminar] Amazon EventBridge](https://d1.awsstatic.com/webinars/jp/pdf/services/20200122_BlackBelt_EventBridge.pdf)
+
+パイプについて
+- [EventBridge Pipes で Tweet をあれこれする - あなたと「|」したい...後記 -](https://track3jyo.com/2022/12/pipes-with-you/)
+
+グローバルエンドポイントについて
+- [Amazon EventBridge にイベントを別リージョンに自動でフェイルオーバーするグローバルエンドポイントが追加されました](https://dev.classmethod.jp/articles/amazon-eventbridge-global-endpoints-automatic-failover-recovery/)
 
 ---
 
