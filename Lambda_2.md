@@ -65,7 +65,7 @@ Lambda 関数の呼び出し方として以下の3つの方法がある
 
         - イベントソースマッピングは、Lambda が関数に送信する単一のペイロードにレコードをまとめてバッチ処理する
 
-        - イベントソースマッピングでのバッチ処理のタイミングについて少しはカスタマイズできる (詳しくは[こちら](#バッチ処理のカスタマイズ)を参照)
+        - イベントソースマッピングでのバッチ処理の挙動について少しはカスタマイズできる (詳しくは[こちら](#バッチ処理のカスタマイズ)を参照)
 
 <br>
 
@@ -108,6 +108,11 @@ Lambda 関数の呼び出し方として以下の3つの方法がある
 
 参考サイト
 
+呼び出し方の種類について
+- [[AWS]知っておいたほうがいいLambda関数の呼び出しタイプとリトライ方式まとめ](https://dev.classmethod.jp/articles/lambda-idempotency/)
+
+- [Understanding the Different Ways to Invoke Lambda Functions](https://aws.amazon.com/jp/blogs/architecture/understanding-the-different-ways-to-invoke-lambda-functions/)
+
 同期実行時のエラーハンドリングについて
 - [Lambdaの例外エラーの通知方法を考える](https://blog.nightonly.com/2022/05/28/lambdaの例外エラーの通知方法を考える/)
 - [【Terraformハンズオン】同期呼び出しのLambda関数をデプロイしてみよう](https://envader.plus/article/466#Lambdaにおける同期呼び出しと非同期呼び出し)
@@ -117,48 +122,74 @@ Lambda 関数の呼び出し方として以下の3つの方法がある
 
 ---
 
-### バッチ処理のタイミングのカスタマイズ
+### バッチ処理の挙動のカスタマイズ
 
-- イベントソースマッピングの Lambda 関数の**処理開始のタイミング**は以下の3つの設定によってカスタマイズできる
+- イベントソースマッピングの Lambda 関数の**処理開始の条件**は以下の3つの設定によってカスタマイズできる
 
-- 以下の3つのうちどれか1つでも当てはまれば Lambda 関数が開始される
+<br>
 
 #### 1. バッチウィンドウ (MaximumBatchingWindowInSeconds)
 
-- ストリーム / キュー にレコードが追加されてから Lambda 関数が実行するまでの**待ち時間**
+<img src="./img/Lambda-Event-Source-Mapping-Batching-Window_1.png" />
+
+<br>
+
+- ストリーム / キュー にレコードが追加されているのを見つけてから Lambda 関数を呼び出すまでの**待ち時間**
 
     ```
     例: バッチウィンドウに0を設定した場合
 
-    → ストリーム / キューにレコードが追加されると、すぐにイベントソースマッピングの Lambda 関数を実行する
+    → ストリーム / キューのレコードが発見されると、すぐにイベントソースマッピングが Lambda 関数を実行する
 
 
     例: バッチウィンドウに5秒を設定した場合
 
-    → ストリーム / キューにレコードが追加されてから5秒後にイベントソースマッピングの Lambda 関数を実行する
+    → ストリーム / キューのレコードが発見されてから5秒後にイベントソースマッピングが Lambda 関数を実行する
     ```
-
 
 <br>    
 
 #### 2. バッチサイズ (BatchSize)
 
+<img src="./img/Lambda-Event-Source-Mapping-Batch-Size_1.png" />
+
+<br>
+
 - ストリーム / キュー に追加されるレコードの数
 
-    - ★バッチサイズに指定した数のレコードが ストリーム / キューに貯まった場合、 イベントーソースマッピングの Lambda 関数が実行される
+    - ★バッチサイズに指定した数のレコードが ストリーム / キューに貯まった場合、 イベントーソースマッピングが Lambda 関数を呼び出す
 
 <br>
 
 #### 3. ペイロードサイズ上限
 
+<img src="./img/Lambda-Event-Source-Payload_1.png" />
+
+<br>
+
 - ここでのペイロードの意味
 
     - ストリーム / キューのレコードを1つにまとめたサイズ = イベントソースマッピングの Lambda 関数に送られるデータのサイズのようなもの
 
-- ペイロードサイズが 6MB に達すると　イベントソースマッピングの Lambda 関数が実行される
+- ペイロードサイズが 6MB に達すると　イベントソースマッピングのが Lambda 関数を呼び出す
 
 - ペイロードサイズの上限は変更できない
 
+<br>
+
+#### 注意点
+
+- バッチウィンドウ、バッチサイズ、ペイロードサイズ上限の3つのうちどれか1つでも当てはまれば Lambda 関数が呼び出される
+
+    ```
+    例: バッチウィンドウを10秒、バッチサイズを3に設定した場合
+
+    1. レコードが3つ貯まらなくても、レコード発見から 10 秒経過すると Lambda 関数を呼び出す → バッチウィンドウの条件に当てはまるから
+
+    2. レコード発見から 10 秒経過するよりも早くレコードが3つ貯まったら Lambda 関数を呼び出す → バッチサイズの条件に当てはまるから
+
+    3. もし、1レコードのペイロードサイズが 3MB の場合で 10秒以内に2レコード貯まったら、 10 秒経過するよりも早く かつ 3レコード貯まるのを待たず Lambda 関数を呼び出す → ペイロードのサイズ上限の条件に当てはまるから
+    ```
 
 <br>
 <br>
@@ -167,20 +198,47 @@ Lambda 関数の呼び出し方として以下の3つの方法がある
 
 [Lambda がストリームおよびキューベースのイベントソースからのレコードを処理する方法](https://docs.aws.amazon.com/ja_jp/lambda/latest/dg/invocation-eventsourcemapping.html)
 
+[[レポート] AWS Lambda and Apache Kafka for real-time data processing applications #SVS321](https://dev.classmethod.jp/articles/session-report-for-aws-lambda-and-apache-kafka-for-realtime/)
+
 ---
 
 ### Destinations (送信先)
 
-- **非同期実行される** Lambda 関数の結果によって実行される後続処理を指定する機能
+<img src="./img/Lambda-Destinations_1.png" />
 
-    - 同期実行の Lambda 関数にて Destinations の指定はできないことに注意
+引用: [Introducing AWS Lambda Destinations](https://aws.amazon.com/jp/blogs/compute/introducing-aws-lambda-destinations/)
+
+<br>
+
+- **非同期実行される** Lambda 関数の結果によって実行される後続処理を行うサービスを指定する機能
+
+    - 同期実行の Lambda 関数では Destinations の指定はできないことに注意
 
 <br>
 
 - 現在(2024/12/5)のところ Destinations に指定できるサービスは以下の通り [by公式](https://docs.aws.amazon.com/ja_jp/lambda/latest/dg/invocation-async-retain-records.html)
 
     - SQS
-        - 標準キューのみ指定可能
     - SNS
     - Lambda
     - EventBridge
+    - S3
+
+<br>
+
+- Lambda 関数の成功時と失敗時にそれぞれ異なる後続処理のサービスを指定できる
+
+<br>
+
+- Destinations の指定はマネジメントコンソールの他に CLI, SAM, CloudFormation から指定可能
+
+<br>
+<br>
+
+参考サイト
+
+[【Serverless Framework】Lambda Destinations機能をServerless Frameworkで実装する](https://makky12.hatenablog.com/entry/2020/04/18/191831)
+
+[【アップデート】非同期Lambda失敗時の送信先にS3が指定できるようになりました](https://dev.classmethod.jp/articles/lambda-destination-support-s3/)
+
+[Introducing AWS Lambda Destinations](https://aws.amazon.com/jp/blogs/compute/introducing-aws-lambda-destinations/)
