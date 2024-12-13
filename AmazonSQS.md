@@ -131,8 +131,107 @@ SQS の構成要素について
 
 ### メッセージ配信の仕組み
 
-TODO: 分散キューの仕組み
-TODO: SQS FIFO キューの仕組み
+#### 分散キュー
+
+<img src="./img/SQS-Distributed-Queue_1.png" />
+
+<br>
+
+- キューはAZを跨いだ複数のサーバーからなり、メッセージを複数サーバーに冗長的に持つ構成となっている
+
+    - *キューは何AZから構成され、何台のサーバーが同じメッセージを保持するのかという情報は無い (ユーザーとしては意識しなくていい部分)
+
+<br>
+
+#### メッセージの送信、取得の流れ
+
+<img src="./img/SQS_1.png" />
+
+引用: [Amazon SQS による分散キュー](https://dev.classmethod.jp/articles/amazon-sqs-queue-service/)
+
+<br>
+
+1. プロデューサーから SQS キューへメッセージ送信
+
+2. コンシューマーが SQS キューへポーリング
+
+3. コンシューマーがメッセージの削除をする (SQS キューへメッセージ削除の API 呼び出す)
+
+<br>
+
+#### FIFO キュー
+
+- `メッセージグループ ID (MessageGroupId)`
+
+    <img src="./img/SQS-FIFO_1.png" />
+
+    引用: [Amazon SQS と処理の重複 後編 ~ FIFO キューの特徴](https://aws.amazon.com/jp/builders-flash/202403/sqs-process-duplication-2)
+
+    <br>
+
+    - FIFO キューにメッセージを送信する際は `メッセージグループ ID ` というものを指定しないといけない
+
+        - ★FIFO キュー内部にてメッセージは`メッセージグループ ID` でまとめられている
+
+    <br>
+
+    - FIFO キューからメッセージを取得するときは、コンシューマーは**メッセージグループ ID を指定できない**
+    
+        = メッセージ取得の際はどのメッセージグループ ID のメッセージが取得されるかわからない
+
+<br>
+
+- FIFO キューへのメッセージの送信
+
+    - プロデューサーはメッセージグループ ID を指定する必要がある
+
+    <br>
+
+    - ★送信するメッセージに `メッセージ重複排除 ID (MessageDeduplicationId)` というパラメーターをつけることができる
+
+        <img src="./img/SQS-FIFO-Message-Duplucation-ID_1.png" />
+        
+        引用: [Amazon SQS と処理の重複 後編 ~ FIFO キューの特徴](https://aws.amazon.com/jp/builders-flash/202403/sqs-process-duplication-2)
+
+        <br>
+
+        - メッセージ重複排除 ID を設定すると、キュー側では 5 分の間に同じメッセージ重複排除 ID を持つメッセージを何度受け取っても、キュー内には 2 度目以降のメッセージが保存されないように制御される
+
+        - ★FIFO キューに送信する際に、各メッセージにいちいち メッセージ重複排除 ID を設定しなくても、 FIFO キュー自体の設定で `ContentBasedDeduplication` を ON にすると自動でメッセージにメッセージ重複排除 ID が付与されるようになる
+
+<br>
+
+- FIFO キューへのメッセージ取得
+
+    - コンシューマーはメッセージグループ ID を指定できない
+
+    <br>
+
+    - ★FIFO キューでは取得中のメッセージがあるグループからは、後続のメッセージが取り出せない
+
+        <img src="./img/SQS-FIFO_2.png" />
+
+        引用: [Amazon SQS と処理の重複 後編 ~ FIFO キューの特徴](https://aws.amazon.com/jp/builders-flash/202403/sqs-process-duplication-2)
+
+        <br>
+
+        - これによって FIFO キューから順番通りにメッセージ取得ができる
+
+    <br>
+    
+    - ★★Amazon SQS の FIFO キューではできるだけ同じメッセージグループ ID のメッセージを返すように設計されいてる
+
+        - (レアなケースではあるが) 以下のような異なるグループのメッセージが取得されることも想定される 
+
+            <img src="./img/SQS-FIFO_3.png">
+
+            引用: [Amazon SQS と処理の重複 後編 ~ FIFO キューの特徴](https://aws.amazon.com/jp/builders-flash/202403/sqs-process-duplication-2)
+
+    <br>
+
+    - ★★★FIFO キューでは同じグループのメッセージの順番は担保されているが、**グループ間の順番は担保されてないことに注意**
+
+        <img src="./img/SQS-FIFO-Order_1.png" />
 
 <br>
 <br>
@@ -140,6 +239,12 @@ TODO: SQS FIFO キューの仕組み
 参考サイト
 
 [Amazon SQS による分散キュー](https://dev.classmethod.jp/articles/amazon-sqs-queue-service/)
+
+[Amazon Simple Queue Service とは](https://docs.aws.amazon.com/ja_jp/AWSSimpleQueueService/latest/SQSDeveloperGuide/welcome.html)
+
+[Amazon SQS と処理の重複 後編 ~ FIFO キューの特徴](https://aws.amazon.com/jp/builders-flash/202403/sqs-process-duplication-2)
+
+[【新機能】Amazon SQSにFIFOが追加されました！（重複削除/単一実行/順序取得に対応）](https://dev.classmethod.jp/articles/sqs-new-fifo/)
 
 ---
 
@@ -203,6 +308,10 @@ TODO: SQS FIFO キューの仕組み
 
 #### デッドレターキュー
 
+<img src="./img/SQS-DLQ_1.png" />
+
+<br>
+
 - 正常に処理できないメッセージを移動（退避）させるキューのこと
 
     - デッドレターキューは SQS の普通のキュー。どの SQS キューをデッドレターキュートとして使うかという名目的なもの
@@ -213,7 +322,7 @@ TODO: SQS FIFO キューの仕組み
 
 - キューに 最大受信回数 (maxReceiveCount) を指定することでデッドレターキューに転送する条件が設定される
 
-    - (たぶん) キューに指定する 最大受信回数 とは、キューが**コンシューマー**から返されるメッセージを受け取る回数
+    - (たぶん) キューに指定する 最大受信回数 とは、メッセージが**コンシューマー**から返されるメッセージを受け取る回数
 
         - コンシューマーがメッセージを処理できず、キューに返却するとそのメッセージの受信回数が1増えるイメージ
 
@@ -237,6 +346,10 @@ TODO: SQS FIFO キューの仕組み
 
 #### 可視性タイムアウト (Visibility Timeout)
 
+<img src="./img/SQS-Visibility-Timeout_1.png" />
+
+<br>
+
 - コンシューマーがメッセージを受信すると、そのメッセージが他のコンシューマからは見えなくなる = 他のコンシューマーがそのメッセージを受信できなくなる期間をもうける機能
 
     - 他のコンシューマーでのメッセージの重複処理を防ぐための機能
@@ -257,9 +370,31 @@ TODO: SQS FIFO キューの仕組み
 
 #### 遅延キュー (Delay Seconds)
 
+<img src="./img/SQS-Delay-Queues_1.png" />
+
+<br>
+
 - プロデューサーからのメッセージが到達した時、遅延キューで設定した期間はコンシューマーから見えなくする機能 = コンシューマーがそのメッセージを受信できなくなる期間をもうける機能
 
     - メッセージがすぐにコンシューマーに処理されるのを防ぐ機能
+
+    -　メッセージの遅延期間 (DelaySeconds) は 0 ~ 15分の間で設定可能
+
+<br>
+
+#### メッセージタイマー
+
+<img src="./img/SQS-Message-Timer_1.png" />
+
+<br>
+
+- 遅延キューのように、メッセージがキューに送信されてからコンシューマーに見えるようなるまでの遅延時間を設定できる機能
+
+- ★各メッセージに対して設定する
+
+    - よって、メッセージごとに異なる遅延時間を設定することができる
+
+- ★★FIFO キューはメッセージタイマーをサポートしていない = 使えない
 
 <br>
 <br>
@@ -275,6 +410,12 @@ TODO: SQS FIFO キューの仕組み
 デッドレターキューについて
 - [デッドレターキューとは何ですか?](https://aws.amazon.com/jp/what-is/dead-letter-queue/)
 
+デッドレターキュー: maxReceiveCount について
+- [Amazon SQS Supports Reprocessing Messages from Dead-Letter Queue](https://www.infoq.com/news/2023/06/aws-sqs-dlq-redrive/)
+
+メッセージタイマーについて
+- [Amazon SQSメッセージタイマー](https://docs.aws.amazon.com/ja_jp/AWSSimpleQueueService/latest/SQSDeveloperGuide/sqs-message-timers.html)
+
 ---
 
 ### メッセージの重複
@@ -285,9 +426,15 @@ TODO: プロデューサー側のエラーによるメッセージの重複の�
 
 <br>
 
-- FIFO キューとスタンダードキュー 
+- FIFO キューとスタンダードキュー の両方で起こりうるメッセージの重複のケース
 
 TODO: 可視性タイムアウトの設定によるメッセージの重複を記載
+
+<br>
+
+#### メッセージが重複して処理されるのを防ぐには
+
+TODO 冪等性について書く
 
 ---
 
