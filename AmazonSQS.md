@@ -12,8 +12,15 @@
 
 #### SQS を利用するメリット
 
-    - メッセージの送信側と受信側のアプリケーションを疎結合にすることで、
+<img src="./img/SQS-Advantage_1.png" />
 
+引用: [アプリケーション間連携を疎結合で実現。「Amazon SQS」をグラレコで解説](https://aws.amazon.com/jp/builders-flash/202105/awsgeek-sqs/)
+
+<br>
+
+- メッセージの送信側と受信側のアプリケーションを疎結合にすることで、システム間で同期を取る必要がなくなる
+
+- (システム間の SQS がメッセージを格納するので) 送信する側が大量にメッセージを送信しても、処理する側は自分のペースでメッセージ SQS から取得してを処理することができる
 <br>
 <br>
 
@@ -420,21 +427,72 @@ SQS の構成要素について
 
 ### メッセージの重複
 
-- スタンダードキューのみに起こりうるメッセージの重複のケース
+#### スタンダードキューのみに起こりうるメッセージの重複のケース
 
-TODO: プロデューサー側のエラーによるメッセージの重複のケースを記載
+- at-least-once 配信の使用によるメッセージの重複
+
+    - メッセージ削除の際に、そのメッセージを持つ複数サーバーのうち1台が使用できない場合、メッセージがそのサーバーに残り、のちに他のコンシューマーから取得されてしまうことがあるらしい
+
+
+        <img src="./img/SQS-Standard-Queue-Message-Duplicate_1.png" />
+
+        <br>
+
+        → ★冪等性のある設計にする必要がある or FIFO キューにする
 
 <br>
 
-- FIFO キューとスタンダードキュー の両方で起こりうるメッセージの重複のケース
+- プロデューサーのメッセージ送信時に問題が発生した場合
 
-TODO: 可視性タイムアウトの設定によるメッセージの重複を記載
+    <img src="./img/SQS-Standard-Queue-Message-Duplicate_2.png" />
+
+    <br>
+
+    → FIFO キューであればメッセージ重複排除 ID を使用してこの状況を防ぐことができる
+
+<br>
+
+#### FIFO キューとスタンダードキュー の両方で起こりうるメッセージの重複のケース
+
+- 可視性タイムアウトの設定によって起こりうるメッセージの重複
+
+    - メッセージを取り出した**コンシューマーの処理が終わるより先に可視性タイムアウトが切れてしまった場合**に、メッセージの重複が発生する
+
+        <img src="./img/SQS-Message-Duplicate_1.png" />
+
+        <br>
+
+        → コンシューマー側から**可視性タイムアウトの変更と終了の API** を SQS にコールすることができる
+
+        - 可視性タイムアウトが短すぎる場合
+
+            - `ChangeMessageVisibility` アクションで**可視性タイムアウトの短縮または延長が可能**
+
+        - 可視性タイムアウトが長すぎる場合
+
+            - `ChangeMessageVisibility` アクションを通じて`VisibilityTimeout` に0秒を設定することで**可視性タイムアウトを終了する**ことができる
 
 <br>
 
 #### メッセージが重複して処理されるのを防ぐには
 
-TODO 冪等性について書く
+- 冪等性 (べきとうせい) を実現するように設計をすることが大事
+
+    - 詳しくは[こちら](./冪等性.md)
+
+<br>
+<br>
+
+参考サイト
+
+SQS で起こりうるメッセージの重複のケースについて
+- [Amazon SQS と処理の重複 前編 ~ 可視性タイムアウトの役割](https://aws.amazon.com/jp/builders-flash/202401/sqs-process-duplication/)
+
+スタンダードキューのみで起きるメッセージの重複について
+- [Amazon SQS at-least-once 配信](https://docs.aws.amazon.com/ja_jp/AWSSimpleQueueService/latest/SQSDeveloperGuide/standard-queues-at-least-once-delivery.html)
+
+可視性タイムアウトの変更や終了の API について
+- [Amazon SQS可視性タイムアウト](https://docs.aws.amazon.com/ja_jp/AWSSimpleQueueService/latest/SQSDeveloperGuide/sqs-visibility-timeout.html#changing-terminating-visibility-timeout)
 
 ---
 
