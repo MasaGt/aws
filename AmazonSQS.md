@@ -500,6 +500,22 @@ SQS で起こりうるメッセージの重複のケースについて
 
 ---
 
+### デッドレターキューの再処理 (re-drive)
+
+- デッドレターキューに転送されたメッセージをソースキュー (メッセージの転送元となるキュー) もしくは他の SQS キューに再送する機能
+
+- マネージドコンソール、AWS SDK、AWS CLI から操作可能
+
+<br>
+<br>
+
+参考サイト
+
+[AmazonSQS-DLQを再処理(再送)する方法](https://www.cloudbuilders.jp/articles/3697/)
+[[アップデート] Amazon SQS の DLQ（デッドレターキュー）の再処理を AWS SDK/CLI を使って処理出来るようになりました](https://dev.classmethod.jp/articles/sqs-dlq-redrive-sdk-cli/)
+
+---
+
 ### コスト
 
 #### 基本的なコスト
