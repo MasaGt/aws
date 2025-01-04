@@ -21,15 +21,64 @@
 
 ### API Gateway での用語とコンセプト
 
-#### ステージ
+#### リソース
 
-- API を複数作成することなく、1つの API で呼び出し環境を分けることができる
-
-- API をデプロイする際には、ステージを設定する必要があることに注意
+<img src="./img/API-Gateway-Resource_1.png" />
 
 <br>
 
-#### 
+- HTTPリクエストを受け取る特定のパス
+
+- ★定義したリソース (= パス) に対してメソッド (GET/POST.PUT/DELETE) とバックエンドサービスを紐づける
+
+<br>
+
+#### ステージ
+
+<img src="./img/API-Gateway-Stage_1.png" />
+
+<br>
+
+- デプロイ環境のこと
+
+- ステージごとに　API の状態を分けて管理することができる
+
+- 各ステージのエンドポイントの URL にはステージ名が含まれる
+
+    <img src="./img/API-Gateway-Stage_2.png" />
+
+<br>
+
+#### API キー
+
+<br>
+
+#### Autorizer (オーソライザー)
+
+<br>
+
+#### モデル
+
+<br>
+
+#### リクエスト
+
+- メソッドリクエスト
+
+- 統合リクエスト
+
+<br>
+
+#### レスポンス
+
+- メソッドレスポンス
+
+- 統合レスポンス
+
+
+参考サイト
+
+[イラストで理解するAPI Gateway](https://zenn.dev/fdnsy/articles/86897abce0bbf5)
 
 ---
 
@@ -58,15 +107,23 @@
 
 #### 狭義 (API Gateway 上) の意味
 
+- API Gateway 上で提供される製品の違い
+
+- HTTP API
+
+    - シンプルで低コスト、低レイテンシーな RESTful API を作成できる製品
+
+- REST API
+
+    - HTTP API より高度な機能やセキュリティ、管理機能が必要な RESTful API の作成ができる製品
+
 ##### ポイント
 
 - API Gateway 上では HTTP API, REST API のどちらとも RESTful API 製品である
 
-- ★各API によって利用できる機能に差があり、HTTP API の方が REST API よりも低価格で利用できる
+- ★各 API によって利用できる[機能](./API_Gateway_Functions.md)に差がある
 
-<br>
-
-#### API Gateway での HTTP API と REST API で提供される機能の違い
+- HTTP API の方が REST API よりも低価格で利用できる
 
 
 <br>
