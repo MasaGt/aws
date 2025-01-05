@@ -1,4 +1,4 @@
-### API Gateway の作成
+### API の作成
 
 1. マネージドコンソールより API Gateway 画面に遷移し、`API` をクリック
 
@@ -59,6 +59,74 @@
 5. API の作成方法とエンドポイントタイプを選択したら `APIを作成` をクリック
 
     <img src="./img/API-Gateway-Create_9.png" />
+
+---
+
+### リソースの作成
+
+- パスを追加する
+
+    - API Gateway でのリソースというものの理解については[こちら](./API_Gateway.md#リソース)を参照
+
+<br>
+
+#### リソースの追加手順
+
+1. マネジードコンソールの API Gateway 画面のサイドメニューから `API` を選択し、リソースを追加したい API をクリックする
+
+    <img src="./img/API-Gateway-Create-Resource_1.png" />
+
+<br>
+
+2. サイドメニューの `リソース` からリソース画面に遷移し、 `リソースを作成` ボタンをクリック
+
+    <img src="./img/API-Gateway-Create-Resource_2.png" />
+
+<br>
+
+3. 追加したいパス名 (= リソース) を入力し、 `リソースを作成` ボタンをクリック
+
+    - プロキシリソース
+
+        - greedy パス変数を使用したパスのこと
+
+        - greedy パス変数 (`{proxy+}`) を利用して、 greedy パスより深いパスを指定したリクエストも全て greedy なリソースで受け取る
+
+            ```
+            [例]
+            リソースパス: /user
+            greedy 変数: {proxy+}
+            
+            上記の設定で作成したプロキシリソースは /user 以降のパスを指定した全てのリクエストを受け取る
+
+            /user でも /user/search でも /user/dept/area/ でも
+            ```
+
+    <br>
+
+    - CORS (クロスオリジンリソース共有)
+
+        - API Gateway で作成する当 API の CORS を有効にするかどうか
+
+        - 異なるオリジンから API Gateway で作成する API を呼び出したい場合に有効にする必要がある
+
+    <br>
+
+    <img src="./img/API-Gateway-Create-Resource_3.png" />
+
+<br>
+<br>
+
+参考サイト
+
+プロキシリソースオプションの greedy パス変数について
+- [【新機能】Amazon API Gatewayの設定方法にcatch-allパス変数、ANYメソッド、Lambdaとの新しいプロキシ連携の3機能が追加。](https://dev.classmethod.jp/articles/api-gateway-adds-three-features/)
+- [API Gatewayで/{proxy+}メソッドを活用する方法](https://qiita.com/hatsukaze/items/12f9ec31fcacc73f2e50#1-proxyメソッドとは)
+- [API Gateway のアップデート – API 開発を簡素化する新機能](https://aws.amazon.com/jp/blogs/news/api-gateway-update-new-features-simplify-api-development/)
+
+API Gateway の CORS について
+- [Amazon API Gateway をクロスオリジンで呼び出す (CORS)](https://dev.classmethod.jp/articles/amazon-api-gateway-cors/)
+- [[AWS CDK] API Gateway(REST API)のCORSの動作を確認してみた](https://dev.classmethod.jp/articles/cors-on-rest-api-of-api-gateway/)
 
 ---
 
