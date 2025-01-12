@@ -130,7 +130,7 @@ API Gateway の CORS について
 
 ---
 
-###  リソースに紐づく HTTP メソッドの作成
+###  リソースに紐づく HTTP メソッド の作成とエンドポイントの結びつけ
 
 <img src="./img/API-Gateway-Create-Method_1.png" />
 
@@ -556,6 +556,13 @@ VPCリンク統合について
 ---
 
 ### ANY メソッド
+
+
+---
+
+### Authorizer の作成と設定
+
+- 詳しくは[こちら](./API_Gateway_Authorizer.md)を参照
 
 ---
 
