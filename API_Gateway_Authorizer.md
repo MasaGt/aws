@@ -48,7 +48,7 @@
 
     <br>
 
-    - Lambda イベントペイロード
+    - [Lambda イベントペイロード](#lambda-イベントペイロード)
 
         - API Gateway から Authorizer (= Lambda 関数) へのデータの渡し方を選択する
 
@@ -62,15 +62,21 @@
 
             - トークンのソース
 
-                - トークンの値が入っているへつだーの項目名
+                - トークンの値が入っているヘッダーの項目名
 
                 - この項目は Lambda 関数の event オブジェクトの authorizationToken にマッピングされる
 
                     - Lambda 関数 (Node.js) でトークンの値を取得する際は `event.authorizationToken` で取得できる
 
+                - API Gateway へのリクエストのヘッダーに指定したトークンのソースが無い場合、Authorizer を呼び出さず、 API Gateway から 401 エラーが返される
+
+            <br>
+
             - トークンの検証
 
                 - 認証用のLambda関数を呼び出す前に行うトークンの値のバリデーション (正規表現)
+
+                - この検証に引っかかった場合、Authorizer を呼び出さず、 API Gateway から 401 エラーが返される
 
         <br>
 
@@ -88,7 +94,7 @@
 
                     - ヘッダー
 
-                        - Lambda 関数 (Node.js) にて `event.header.key名` で取得可能
+                        - Lambda 関数 (Node.js) にて `event.headers.key名` で取得可能
 
                     <br>
 
@@ -234,3 +240,90 @@ Lambda イベントペイロードについて
     <br>
 
     <img src="./img/API-Gateway-Apply-Authorizer_6.png" />
+
+---
+
+### Lambda イベントペイロード
+
+- Authorizer に渡す認証情報をトークンベースにするかリクストベースにするかに関する設定項目
+
+<br>
+
+#### トークンベース
+
+<img src="./img/API-Gateway-Event-Payload-Token_1.png" />
+
+<img src="./img/API-Gateway-Event-Payload-Token_2.png" />
+
+<br>
+
+- 認証情報はリクエストヘッダーの項目に格納される
+
+- 1つのヘッダー項目の値で認証する場合はこちらを選択する
+
+- トークンのソースに指定した項目がリクエストヘッダーに含まれていない、もしくは、Authorizer作成の際に設定したトークンの検証の正規表現に引っかかった場合、 Authorizer を呼び出す前に API Gateway からエラーが返却される
+
+<br>
+
+#### リクエストベース
+
+<img src="./img/API-Gateway-Event-Payload-Request_1.png" />
+
+<img src="./img/API-Gateway-Event-Payload-Request_2.png" />
+
+<br>
+
+- 認証情報はリクエストヘッダーの項目、クエリ文字列、パスパラメータ、[ステージ変数](#ステージ変数とは)、[コンテキスト](#コンテキストとは)に含めることができる
+
+- ヘッダー以外の項目、あるいは複数の値で認証する場合はこちらを選択するといいらしい
+
+- トークンベースの認証と同様に、指定した ID ソースにキー項目が含まれていない場合 Authorizer を呼び出す前に API Gateway からエラーが返却される
+
+<br>
+<br>
+
+参考サイト
+
+[Lambdaオーソライザーのトークンベースとリクエストパラメータベースの挙動を比べて、どちらを選択するべきか考えてみた](https://dev.classmethod.jp/articles/lambda-authorizer-toke-request)
+
+---
+
+### ステージ変数とは
+
+- API Gateway のステージごとに設定できる環境変数のこと
+
+- ステージ変数に呼び出す Lambda 関数のエイリアスを設定することで、特定のステージの API を呼んだら特定のエイリアスの Lambda 関数を呼び出すことができるようになる
+
+    <img src="./img/API-Gateway-Stage-Variable_1.png.avif" />
+
+    <br>
+
+- リクエストベースの認証時にステージ変数の情報を参照できる
+
+    - event.stageVariables.{ステージ変数名} にマッピングされる (Node.js)
+
+<br>
+<br>
+
+参考サイト
+
+[API Gatewayの耐障害性を考える](https://zenn.dev/tech4anyone/articles/167873880acc7e)
+
+---
+
+### コンテキストとは
+
+- Lambda 関数が受け取るオブジェクトで、呼び出し、関数、および実行関数に関する情報を示すメソッドおよびプロパティが格納されたオブジェクト = コンテキスト(オブジェクト)と呼ぶ
+
+<br>
+
+- リクエストベースの認証を設定した場合は、eventオブジェクトにコンテキスト情報が含まれる
+
+    - event.requestContext にマッピングされる (Node.js)
+
+<br>
+<br>
+
+参考サイト
+
+[ambda コンテキストオブジェクトを使用して Node.js 関数の情報を取得する](https://docs.aws.amazon.com/ja_jp/lambda/latest/dg/nodejs-context.html)
