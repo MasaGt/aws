@@ -31,7 +31,6 @@
 <br>
 <br>
 
-
 参考サイト
 
 DAX全般
@@ -73,3 +72,9 @@ DAXの制限について
 - 異なるリージョン間でのデータ転送に関して DynamoDB 側でデータ転送に料金が発生する
     - DynamoDB 側のデータ転送(Out)
 
+<br>
+<br>
+
+参考サイト
+
+[Amazon DynamoDB Accelerator (DAX) のオンデマンドインスタンス料金](https://d1.awsstatic.com/International/ja_JP/Amazon%20DynamoDB%20Accelerator%20(DAX)%20Pricing_v3.pdf)

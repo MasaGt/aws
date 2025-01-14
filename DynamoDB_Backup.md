@@ -4,21 +4,31 @@
 
     - 過去35日間のデータバックアップを取得する機能
 
-    - 過去35日間のあいだだったら1 秒単位の精度で復元可能 
+    - 過去35日間のあいだならば 1 秒単位の精度で復元可能 
         - \~~日前の\~~時\~~分\~~秒時点でのテーブルを復元できるイメージ
+
+<br>
 
 - オンデマンドバックアップ
 
-- AWS Backup
+    - いわゆる普通のバックアップ (必要なときにバックアップを作成する)
 
-- AWS S3
+    - バックアップの保存先を以下の2つから選べる
+        - 
+        - 
+    
+    - [AWS Backup](./AWS_Backup.md) を利用してのオンデマンドバックアップも可能
 
 <br>
 <br>
 
 参考サイト
 
-[Amazon DynamoDBにおけるバックアップ戦略](https://aws.amazon.com/jp/blogs/news/backup-strategies-for-amazon-dynamodb/)
+バックアップ全般について
+- [Amazon DynamoDBにおけるバックアップ戦略](https://aws.amazon.com/jp/blogs/news/backup-strategies-for-amazon-dynamodb/)
+
+バックアップストレージの種類について
+- [【AWS入門】Amazon EC2やS3、EBSなどのデータ保護ができるAWS Backupとは](https://cloudnavi.nhn-techorus.com/archives/4188#:~:text=バックアップを行うストレージに,ストレージ）のものがあります%E3%80%82)
 
 ---
 
@@ -77,6 +87,12 @@
 
 #### 概要
 
+- いわゆる普通のバックアップ
+
+-
+
+#### コスト
+
 #### リカバリ方法
 
 ---
@@ -89,7 +105,7 @@
 
 ---
 
-### AWS S3
+### AWS S3 へのエクスポート
 
 #### 概要
 

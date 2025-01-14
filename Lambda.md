@@ -701,8 +701,6 @@ extensions について
 
 - ★ Lambda で購入できる SP は [Compute Savings Plans](./EC2_Savings-Plans.md) のみ
 
-    <img src="" />
-
 <br>
 
 - Lambda の SP で割引が適用されるのは実行時間料金と Provisioned Concurrency 系の料金のみ

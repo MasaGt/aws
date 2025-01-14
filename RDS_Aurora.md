@@ -203,14 +203,18 @@ Protection Group について
 
 - バックトラック
     - ★ **Aurora MySQL のみ利用可能**
+
     - DBクラスタを過去の状態に巻き戻す機能
+
     - スナップショットから復元するわけではないので、バックアップを取得する以前の状態にも復元可能
+
     - ポイントインタイムリカバリ (PITR) も特定の時点への DB クラスターの復元する機能だが、**バックトラックとは異なり、別のクラスターとして再作成してしまう**
 
 <br>
 
 - DevOps Guru
     - 機械学習 (ML) を活用してAmazon RDS 関連の問題を検出してくれるサービス
+
     - **他の RDS でも DB エンジンが PostgreSQL なら利用可能** 
 
 <br>
@@ -227,7 +231,9 @@ Protection Group について
     - プライマリインスタンスがあるリージョンをプライマリリージョン、その他のリージョンをセカンダリーリージョンと呼ぶ
 
         - セカンダリリージョンの RDS インスタンスはリードレプリカのみ
+
         - リージョン間でのデータ同期は通常1秒未満で完了する
+
         - 最大5つのセカンダリリージョンを持てる
 
         <br>
@@ -245,6 +251,7 @@ Protection Group について
     <br>
 
     - グローバルデータベースのリージョン間レプリケーションの仕組みは、ストレージ層に Replication Fleet という機構が入り Aurora ストレージの変更分を転送するというもので、**DB インスタンスはレプリケーションに直接関与しない**
+
         - [この記事](https://speakerdeck.com/maroon1st/oshou-qing-niriziyonjian-drgadekiruaurora-global-databasefalseshi-li-wojian-temita?slide=44) によると、セカンダリリージョンに DB インスタンス無しでレプリケーション可能 = セカンダリリージョンの待機コストを抑えることができる
 
     <img src="./img/RDS-Aurora-Global-Database_3.webp" />
@@ -254,6 +261,7 @@ Protection Group について
     <br>
 
     - **クロスリージョンリードレプリケーション**というリージョンをまたいでのレプリケーション機能もある
+
         - レプリケーションの仕組みとしては、リージョンをまたいでインスタンス間でログファイルを連携し、ログを受け取った他リージョンのインスタンスがそのリージョンのストレージを更新するというもの
 
     <img src="./img/RDS-Aurora-Cross-Region-Replica_1.png" />
@@ -276,25 +284,45 @@ Protection Group について
     引用: [【Aurora】バックアップが種類が多くて分からない。](https://study-infra.com/aurora-backup/#toc6)
 
 <br>
+
+- Auto Scaloing
+    - リードレプリカの平均CPU使用率・接続数に応じて、リードレプリカの数を増加・減少を自動的に行わせる機能
+
+    - Aurora Auto Scaling ポリシーを作成することで自動スケーリング可能
+
+    - 詳しくはこちらに[記事](https://dev.classmethod.jp/articles/how-to-configure-amazon-aurora-auto-scaling/)を参照
+    
+    - 新しくリードレプリカを立ち上げるのに時間がかかるらしいので、急なアクセスのスパイクには対応出来なさそう
+
+<br>
 <br>
 
 参考サイト
 
-[AuroraとRDSの違いを一覧表でまとめてみた](https://dev.classmethod.jp/articles/aurora-or-rds-by-table/)
+Aurora の機能全般について
+- [AuroraとRDSの違いを一覧表でまとめてみた](https://dev.classmethod.jp/articles/aurora-or-rds-by-table/)
 
-[[小ネタ]Aurora MySQL の スナップショットの復元、ポイントインタイムリカバリ、バックトラックの違いを簡単にまとめてみた](https://dev.classmethod.jp/articles/aurora-mysql-snapshot-point-in-time-backtrack/)
+- [Amazon Auroraについてまとめてみました。](https://qiita.com/kuromame1020611/items/83643f14f0dd6ecd9dde#auroraグローバルデータベース)
 
-[Amazon DevOps Guru for RDS をさわってみました](https://note.com/happyelements/n/nace9f2bf59a2)
+- [AuroraかRDSどちらを選ぶべきか比較する話をDevelopers.IO 2019 in OSAKAでしました #cmdevio](https://dev.classmethod.jp/articles/developers-io-2019-in-osaka-aurora-or-rds/#toc-rdsaurora)
 
-[Amazon Auroraについてまとめてみました。](https://qiita.com/kuromame1020611/items/83643f14f0dd6ecd9dde#auroraグローバルデータベース)
+バックトラックについて
+- [[小ネタ]Aurora MySQL の スナップショットの復元、ポイントインタイムリカバリ、バックトラックの違いを簡単にまとめてみた](https://dev.classmethod.jp/articles/aurora-mysql-snapshot-point-in-time-backtrack/)
 
-[AuroraかRDSどちらを選ぶべきか比較する話をDevelopers.IO 2019 in OSAKAでしました #cmdevio](https://dev.classmethod.jp/articles/developers-io-2019-in-osaka-aurora-or-rds/#toc-rdsaurora)
+DevOps Guru について
+- [Amazon DevOps Guru for RDS をさわってみました](https://note.com/happyelements/n/nace9f2bf59a2)
 
-[お手軽にリージョン間DRができるAurora Global Databaseの実力を見てみた](https://speakerdeck.com/maroon1st/oshou-qing-niriziyonjian-drgadekiruaurora-global-databasefalseshi-li-wojian-temita)
+グローバルテーブルについて
+- [お手軽にリージョン間DRができるAurora Global Databaseの実力を見てみた](https://speakerdeck.com/maroon1st/oshou-qing-niriziyonjian-drgadekiruaurora-global-databasefalseshi-li-wojian-temita)
 
-[[アップデート] Auroraのストレージベースのリージョン間レプリケーションAurora Global Databaseが利用可能になりました #reinvent](https://dev.classmethod.jp/articles/reinvent2018-xx-xx-xx-2/)
+- [[アップデート] Auroraのストレージベースのリージョン間レプリケーションAurora Global Databaseが利用可能になりました #reinvent](https://dev.classmethod.jp/articles/reinvent2018-xx-xx-xx-2/)
 
-[Amazon Aurora Global Databaseを導入するまで](https://team-blog.mitene.us/mitene-multiregion-aws-aurora-global-database-c0434c60a204)
+- [Amazon Aurora Global Databaseを導入するまで](https://team-blog.mitene.us/mitene-multiregion-aws-aurora-global-database-c0434c60a204)
+
+Auto Scaling について
+- [レプリカをオートスケールさせるAmazon Aurora Auto Scalingの導入ポイントをまとめてみた](https://dev.classmethod.jp/articles/how-to-configure-amazon-aurora-auto-scaling/)
+
+- [AuroraにAutoScalingを実装しようとしたら失敗した話](https://zenn.dev/momonga3939/articles/7b05e228a25fe1)
 
 ---
 
@@ -377,7 +405,7 @@ Protection Group について
 - Aurora グローバルデータベース
     - セカンダリリージョンで起動しているインスタンスの使用料金が発生する
     - 同様に、セカンダリリージョンでのストレージおよび I/O リクエスト (セカンダリリージョンではリードレプリカのみなので読み込み I/O) にも料金が発生する
-    - プライマリリージョンの変更をセカンダリリージョンにレプリケーションする際の書き込み I/O 100万件あたり \~~ UDS の形で料金が発生する
+    - ★ プライマリリージョンの変更をセカンダリリージョンにレプリケーションする際の書き込み I/O 100万件あたり \~~ UDS の形で料金が発生する
 
     <img src="./img/RDS-Aurora-Global-Database-Cost_1.png" />
 
