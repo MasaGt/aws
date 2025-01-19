@@ -88,7 +88,7 @@
 
     - プロキシリソース
 
-        - greedy パス変数を使用したパスのこと
+        - [greedy パス変数](#greedy-パス変数)を使用したパスのこと
 
         - greedy パス変数 (`{proxy+}`) を利用して、 greedy パスより深いパスを指定したリクエストも全て greedy なリソースで受け取る
 
@@ -557,12 +557,98 @@ VPCリンク統合について
 
 ---
 
-### ANY メソッド
+### パスパラメーターを受け取るリソースの作成
 
+- [リソースの作成](#リソースの作成)にて、リソース名を `{}`でパスパラメータ名をくくって作成する
+
+<br>
+
+#### 例: `/test` 以降にパスパラメータをつけて呼び出すエンドポイントを作成したい
+
+<br>
+
+1. リソースの作成にて `/test` までのリソースを作成する
+
+    <img src="./img/API-Gateway-Path-Param_1.png" />
+
+<br>
+
+2. `/test` 以降にリソースを作成する。この時、リソース名 (=受け取りたいパスパラメーター名) を `{}` でくくる
+
+    <img src="./img/API-Gateway-Path-Param_2.png" />
+
+<br>
+
+3. `/test/{param}` に HTTP メソッドと統合先を紐付ける
+
+    <img src="./img/API-Gateway-Path-Param_3.png" />
+
+<br>
+
+4. Postman で呼んでみる
+
+    <img src="./img/API-Gateway-Path-Param_4.png" />
+
+    <br>
+
+    - 結果: ちゃんと統合先の Lambda 関数が呼び出された
+
+        <img src="./img/API-Gateway-Path-Param_5.png" />
+
+    <br>
+
+    - ちなみに、パスパラメーターは `event` オブジェクトの `pathParameters` に格納される (Node.js)
+
+        <img src="./img/API-Gateway-Path-Param_6.png" />
+
+<br>
+<br>
+
+参考サイト
+
+[AWS APIGatewayでパスパラメータの設定を行う](https://qiita.com/yamapyblack/items/c037c4e07123929d9046)
 
 ---
 
-### パスパラメーターを受け取るリソースの作成
+### greedy パス変数
+
+<img src="./img/API-Gateway-Greedy-Path-Param_1.png" />
+
+<br>
+
+#### 作成方法
+
+TODO: greedyパスを用いたリソース(パス)の作成方法を書く
+
+<br>
+<br>
+
+参考サイト
+
+[【新機能】Amazon API Gatewayの設定方法にcatch-allパス変数、ANYメソッド、Lambdaとの新しいプロキシ連携の3機能が追加。](https://dev.classmethod.jp/articles/api-gateway-adds-three-features/#Catch-all%25E3%2583%2591%25E3%2582%25B9%25E5%25A4%2589%25E6%2595%25B0)
+
+[API Gateway のアップデート – API 開発を簡素化する新機能](https://aws.amazon.com/jp/blogs/news/api-gateway-update-new-features-simplify-api-development/)
+
+---
+
+### ANY メソッド
+
+<img src="./img/API-Gateway-ANY-Method_1.png" />
+
+<br>
+
+#### 作成方法
+
+TODO: ANY メソッドの定義方法を書く
+
+<br>
+<br>
+
+参考サイト
+
+[【新機能】Amazon API Gatewayの設定方法にcatch-allパス変数、ANYメソッド、Lambdaとの新しいプロキシ連携の3機能が追加。](https://dev.classmethod.jp/articles/api-gateway-adds-three-features/#Catch-all%25E3%2583%2591%25E3%2582%25B9%25E5%25A4%2589%25E6%2595%25B0)
+
+[API Gateway のアップデート – API 開発を簡素化する新機能](https://aws.amazon.com/jp/blogs/news/api-gateway-update-new-features-simplify-api-development/
 
 ---
 
