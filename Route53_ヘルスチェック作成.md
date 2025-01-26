@@ -362,6 +362,8 @@ Route53 のヘルスチェックについて
 
 <img src="./img/Route53-HealthCheck-Anomaly-Alarm_2.png" />
 
+元画像: [Amazon Route 53 がリソースの正常性をチェックする方法](https://docs.aws.amazon.com/ja_jp/Route53/latest/DeveloperGuide/welcome-health-checks.html)
+
 <br>
 
 #### 設定項目
