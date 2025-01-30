@@ -13,9 +13,11 @@
 
 6. [位置情報ルーティングの設定方法](#位置情報ルーティング)
 
-7. [IPベースルーティングの設定方法](#ipベースルーティング)
+7. [地理的近接性ルーティングポリシー]()
 
-8. [複数値回答ルーティングの設定方法](#複数値回答ルーティング)
+8. [IPベースルーティングの設定方法](#ipベースルーティング)
+
+9. [複数値回答ルーティングの設定方法](#複数値回答ルーティング)
 
 ---
 
@@ -428,9 +430,121 @@
 
 #### 今回の構成
 
+<img src="./img/Route53-DNS-Record-Geo-Location-Routing_1.png" />
+
 <br>
 
 #### 手順
+
+1. ホストゾーンに位置情報ルーティングの A レコードを作成する
+
+    <img src="./img/Route53-DNS-Record-Geo-Location-Routing_2.png" />
+
+    <br>
+
+    - `場所`: アクセス元の場所
+    
+<br>
+
+2. 現在の場所 (アメリカ以外) から nslookup や dig コマンドでドメイン名に**EC2_A (バージニア北部) の IP アドレス**が結び付けられているかを確認
+
+    - 現在の場所 (アメリカ以外) から確認
+
+        <img src="./img/Route53-DNS-Record-Geo-Location-Routing_3.png" />
+
+    <br>
+
+    - ★もしくは Amazon CloudShell で任意のリージョンからドメイン名へのアクセスを試すことができる
+
+        <img src="./img/Route53-DNS-Record-Geo-Location-Routing_4.png" />
+        
+
+<br>
+
+3. アメリカから nslookup や dig コマンドでドメイン名に**EC2_B (オレゴン) の IP アドレス**が結び付けられているかを確認
+
+    - ★VPN でアメリカに接続してから nslookup や dig で確認すると
+
+        <img src="./img/Route53-DNS-Record-Geo-Location-Routing_5.png" />
+
+    <br>
+
+    - ★もしくは Amazon CloudShell で任意のリージョンからドメイン名へのアクセスを試すことができる
+
+        <img src="./img/Route53-DNS-Record-Geo-Location-Routing_6.png" />
+
+<br>
+
+#### 位置情報ルーティングでのフェイルオーバー
+
+- もし EC2_B (オレゴン) のサーバーで障害が発生した場合、以下の画像のように、アメリカからのアクセスは EC2_A (バージニア北部) にルーティングされる 
+
+    <img src="./img/Route53-DNS-Record-Geo-Location-Routing_7.png" />
+    
+    <br>
+
+    - ★EC2_B へルーティングする位置情報ルーティングの A レコードで EC2_B へのヘルスチェックを設定している必要がある
+
+        <img src="./img/Route53-DNS-Record-Geo-Location-Routing_8.png" />
+        
+        <br>
+
+    - ★EC2_B が復旧 = EC2_B へのヘルスチェックが正常を検知すれば、アメリカからのトラフィックは再び EC2_B にルーティングされる
+    
+    - 逆も同様に、EC2_A (バージニア北部) で障害が発生した場合、デフォルトアクセスは EC2_B (オレゴン) にルーティングされる
+
+<br>
+
+#### ポイント
+
+- 全てのエンドポイントで障害が発生した場合
+
+    - アメリカからのアクセス → EC2_B (オレゴン) の IP アドレスが返ってくる
+
+    - アメリカ以外からのアクセス → EC2_A (バージニ北部) の IP アドレスが返ってくる
+
+        <img src="./img/Route53-DNS-Record-Geo-Location-Routing_9.png" />
+
+<br>
+
+- ★★★設定されている地域以外からのアクセスのルーティングはどうなる?
+
+    - デフォルト地域からのトラフィックに対するルーティング先を設定したレコードがある場合
+
+        - そのレコードのルーティング先に接続する
+
+            <img src="./img/Route53-DNS-Record-Geo-Location-Routing_10.png" />
+
+    <br>
+
+    - デフォルト地域からのトラフィックに対するルーティング先を設定したレコードがない場合
+
+        - ホスト名を解決できない
+
+            <img src="./img/Route53-DNS-Record-Geo-Location-Routing_11.png" />
+
+---
+
+### [地理的近接性ルーティング](./Route53.md#--地理的近接性ルーティングポリシー)
+
+#### 今回の構成
+
+<br>
+
+#### 手順
+
+<br>
+
+#### 地理的近接性ルーティングでのフェイルオーバー
+
+<br>
+
+#### ポイント
+
+
+- 全てのエンドポイントで障害が発生した場合
+
+    - 
 
 ---
 
