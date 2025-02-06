@@ -121,19 +121,19 @@
 
     - `dig TXT o-o.myaddr.l.google.com +short` を繰り返し実行し、異なる IP アドレスが返却されれば現在使用しているキャッシュ DNS サーバーは IP Anycast で提供されている
 
-    - 以下の画像は `dig TXT o-o.myaddr.l.google.com +short` の問い合わせ先に google の公開キャッシュ DNS サーバーを指定している様子。返ってくるキャッシュ DNS サーバーの IP が異なる = google の公開キャッシュ DNS サーバーの 8.8.8.8 は anycast address であることがわかる
+    - 以下の画像は `dig TXT o-o.myaddr.l.google.com +short` の問い合わせ先に google の公開キャッシュ DNS サーバーを指定している様子。返ってくるキャッシュ DNS サーバーの IP アドレスが異なる = google の公開キャッシュ DNS サーバーの 8.8.8.8 は anycast address であることがわかる
 
         <img src="../img/Dig-IP-Query-Anycast_1.png"/>
 
 <br>
 
-3. Route53 の CIDR ブロックにキャッシュ DNS サーバーのIPが属するサブネットを登録する
+3. Route53 の CIDR ブロックにキャッシュ DNS サーバーの IP アドレスが属するサブネットを登録する
 
     <img src="../img/Route53-IP-Based-Issue-Solution_1.png" />
 
     <br>
 
-    - ★自分の PC の再帰問い合わせ先のキャッシュ DNS サーバー IP アドレスが Anycast IP の場合は、実際に接続されるキャッシュ DNS サーバーの IP の設定もれに注意
+    - ★自分の PC の再帰問い合わせ先のキャッシュ DNS サーバー IP アドレスが Anycast アドレス の場合は、実際に接続されるキャッシュ DNS サーバーの IP アドレスの設定もれに注意
 
         <img src="../img/Route53-IP-Based-Issue-Solution_2.png" />
 
@@ -181,7 +181,7 @@
 
         <br>
 
-    - キャッシュサーバーが ECS をサポートしている場合、自分のグローバル IP を反復問い合わせに含めるので、ドメイン名の解決ができるはず
+    - キャッシュサーバーが ECS をサポートしている場合、自分のグローバル IP アドレスを反復問い合わせに含めるのでドメイン名の解決ができるはず
 
         <img src="../img/Route53-IP-Based-Issue_4.png" />
 
@@ -220,7 +220,7 @@
 
     - 他の IP アドレスからのドメイン名の問い合わせのケースをテストできる
 
-    - もし、yyy.yyy.yyy.0/24 に属する IP からのアクセスを他のエンドポイントにルーティングするような A レコードを設定し、そのテストを行いたい場合は以下のコマンドで検証可能
+    - もし、yyy.yyy.yyy.0/24 に属する IP アドレスからのアクセスを他のエンドポイントにルーティングするような A レコードを設定し、そのテストを行いたい場合は以下のコマンドで検証可能
 
         - ★キャッシュ DNS サーバーが ECS をサポートしている必要があることに注意
 
