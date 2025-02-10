@@ -426,7 +426,7 @@
 
 ---
 
-### [位置情報ルーティング](./Route53.md#--レイテンシールーティング)
+### [位置情報ルーティング](./Route53.md#--位置情報ルーティング)
 
 #### 今回の構成
 
@@ -676,7 +676,7 @@
 
 - それ以外のネットワークアドレスに属している PC からのアクセスではオレゴンの EC2 インスタンスにルーティングされる
 
-<img src="./img/Route53-IP-Based-Routing-_2.png" />
+    <img src="./img/Route53-IP-Based-Routing-_2.png" />
 
 <br>
 
@@ -729,9 +729,10 @@
 3. 正しくルーティングされるか確認する
 
     - 自分のマシンからアクセスし、ドメイン名に**バージニア北部の EC2 インスタンスの IP アドレス**が紐づけられているかを確認
+
         - dig コマンドでドメイン名の問い合わせ
 
-            <img src="./img/Route53-Check-IP-Based-Routing-_1.png" />
+            <img src="./img/Route53-Check-IP-Based-Routing_1.png" />
 
     <br>
 
@@ -739,7 +740,7 @@
 
         - dig コマンドでドメイン名の問い合わせ (subnet オプションで 198.51.100.0/24 からのアクセスをテスト)
 
-            <img src="./img/Route53-Check-IP-Based-Routing-_2.png" />
+            <img src="./img/Route53-Check-IP-Based-Routing_2.png" />
 
 <br>
 
@@ -760,7 +761,6 @@
     - フェイルオーバーは起きない
 
         <img src="./img/Route53-IP-Based-Routing-Failover_2.png" />
-
 
 <br>
 
@@ -822,6 +822,36 @@ CIDRブロックのサブネットマスクとアクセス元のサブネット�
 ---
 
 ###  [複数値回答ルーティング](./Route53.md#--複数値回答ルーティングポリシー)
+
+#### 今回の構成
+
+- ドメイン名 sample.com のルーティング先にはバージニア北部の EC2 インスタンスとオレゴンの EC2 インスタンスを指定
+
+- ドメイン名のアクセスに対して、上記2つのルーティング先からどちらかランダムに接続される
+    
+    <img src="./img/Route53-Multivalue-Answer-Routing-Sample_1.png" />
+
+<br>
+
+#### 手順
+
+1. ホストゾーンに 複数値回答ルーティングの A レコードを作成する
+
+    <img src="./img/Route53-Create-Multivalue-Answer-Routing_1.png" />
+
+<br>
+
+2. 正しくルーティングされるか確認する
+
+    - dig ,curl コマンドや web ブラウザからアクセスしてみる
+
+        - dig コマンドの問い合わせ結果に、設定した全ての複数値回答ルーティングレコードが回答されればOK
+
+        <img src="./img/Route53-Check-Multivalue-Answer-Routing_1.png" />
+
+---
+
+### [レイテンシールーティング](./Route53.md#--レイテンシールーティング)
 
 #### 今回の構成
 
