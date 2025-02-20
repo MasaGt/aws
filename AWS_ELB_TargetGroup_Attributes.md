@@ -83,6 +83,45 @@
 
     - `維持設定`
 
+        - スティッキーセッションの有効/無効の設定
+
+        <img src="./img/ELB_TargetGroup-Attributes_6.png" />
+
+        <br>
+
+
+        - `維持設定のタイプ`
+
+            - ロードバランサーが Cookie を生成しました
+
+                - 同一ユーザーの判断を ALB 側で自動で生成する Cookie の値で判断する
+
+                <img src="./img/ALB-Sticky-Session_1.png" />
+
+                引用: [【基礎から学ぶ】ELBのスティッキーセッションについてまとめてみた](https://blog.serverworks.co.jp/tech/2017/01/05/elb-sticky)
+
+            <br>
+
+            - アプリケーションベースの Cookie
+
+                - 同一ユーザーの判断をアプリケーション側で付与する Cookie の値で判断する
+
+                <img src="./img/ALB-Sticky-Session_2.png" />
+
+                引用: [【基礎から学ぶ】ELBのスティッキーセッションについてまとめてみた](https://blog.serverworks.co.jp/tech/2017/01/05/elb-sticky)
+
+                <br>
+
+                - アプリケーション側で付与する Cookie を使う場合、以下の画像のように ALB 側の維持設定の項目にて Cookie 名を事前に設定する必要がある
+
+                <img src="./img/ELB_TargetGroup-Attributes_7.png" />
+
+        <br>
+
+        - `維持設定の期間`
+
+            - スティッキーセッションの有効期限 = Cookie の有効期限
+
     <br>
 
     - `クロスゾーン負荷分散`
@@ -193,3 +232,74 @@
 
 ELB のヘルスチェックについて
 - [ELBとRoute 53のヘルスチェック仕様の違い](https://dev.classmethod.jp/articles/health-check-spec-elb-route53/)
+
+---
+
+### 維持設定 (スティッキーセッション)
+
+- ★★★ALB (+ CLB) と ELB のスティッキーセッションでは、同一ユーザー判定に利用されるものが違う★★★
+
+#### ALB と CLB
+
+- Cookie を利用して同一ユーザーの判断を行う
+
+    - ALB によって自動で作成される Cookie
+
+    - 接続先アプリケーションが付与する Cookie
+
+    - ★Cookie なので違うブラウザからのアクセスの場合、接続先が異なる可能性がある
+
+<br>
+
+#### NLB
+
+- 送信元 IP アドレスを利用して同一ユーザーの判断を行う
+
+- ★[NAT や NAPT](https://github.com/MasaGt/CS/blob/eaaffa7d88a060f46c64a74b951105fe05d4eb6d/NAT-NAPT.md) を利用したリクエストの場合、全てのリクエストが1つの接続先に偏るので注意
+
+<br>
+
+#### ステッキーセッションの有効期間
+
+##### ALB
+
+- 維持設定の期間 (Cookie の有効期限) はリクエストごとに Cookie の有効期限がリセットされる
+
+- よって、最終アクセスから維持設定の期間が経過すると、スティッキーセッションは一旦終了する
+
+<img src="./img/ALB-Sticky-Session_3.png" />
+
+<br>
+
+##### CLB
+
+- **ALB と異なり**、維持設定の期間 (Cookie の有効期限) はリクエストごとに Cookie の有効期限がリセット**されない**
+
+- よって、最初のアクセスから維持設定の期間が経過すると、スティッキーセッションは一旦終了する
+
+<img src="./img/CLB-Sticky-Session_1.png" />
+
+<br>
+
+#### NLB
+
+<img src="./img/NLB-Sticky-Session_1.png" />
+
+- 明確な有効期限はない
+
+- ターゲットのヘルスチェックの状態が更新されたり、ターゲットグループに対してターゲットの登録や解除を行うことでスティッキーセッションがリセットされることがある
+
+    - 上記のようなリセットがなければ、同一 IP からのリクエストはずっと固定接続先に振り分けられる 
+
+<br>
+<br>
+
+参考サイト
+
+[【基礎から学ぶ】ELBのスティッキーセッションについてまとめてみた](https://blog.serverworks.co.jp/tech/2017/01/05/elb-sticky)
+
+[AWS Black Belt Online Seminar Elastic Load Balancing](https://pages.awscloud.com/rs/112-TZM-766/images/AWS-Black-Belt_2023_Elastic-Load-Balancing_0525_v1.pdf)
+
+[ALBのスティッキーセッションの仕様について教えてください。](https://dev.classmethod.jp/articles/tsnote-alb-sticky-session-specification/)
+
+[Network Load Balancer(NLB)のスティッキーセッション維持期間はどのくらいですか?](https://support.serverworks.co.jp/hc/ja/articles/5884706664473-Network-Load-Balancer-NLB-のスティッキーセッション維持期間はどのくらいですか)
