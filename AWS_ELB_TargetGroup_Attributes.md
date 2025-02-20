@@ -45,9 +45,35 @@
 
     - `ロードバランシングアルゴリズム`
 
+        - リクエストを割り振るアルゴリズム
+
+        - `ラウンドロビン`
+
+            - リクエストを順番に均等に振り分ける方法
+
+                <img src="./img/ELB_TargetGroup-Attributes-Algorithms_1.png">
+
+                引用: [ロードバランサー（LB）とは？仕組みやDNSラウンドロビンとの違いについて解説](https://www.rworks.jp/system/system-column/sys-entry/16305/)
+
+            <br>
+
+        - `最小の未処理のリクエスト`
+
+            - **未処理のリクエスト数が最も少ないターゲット**にリクエストを割り振る方法
+
+            <br>
+
+        - `加重ランダム`
+
+            - ターゲットグループ内の正常なターゲットにリクエストを**均等に、ランダムな順序**で振り分ける方法
+
     <br>
 
     - `スロースタート期間`
+
+        - 新しく登録されたターゲットに、リクエストを送信し始めるまでの猶予期間のこと
+
+        - 詳しくは[こちら](#スロースタート期間)を参照
 
     <br>
 
@@ -109,9 +135,15 @@
 
 参考サイト
 
-[【初心者向け】Application Load Balancer（ALB）とターゲットグループの属性についてまとめてみた](https://blog.serverworks.co.jp/2023/04/13/115851#ターゲットグループの属性とは)
+設定項目全般について
 
-[Application Load Balancer のターゲットグループ属性を編集する](https://docs.aws.amazon.com/ja_jp/elasticloadbalancing/latest/application/edit-target-group-attributes.html)
+- [【初心者向け】Application Load Balancer（ALB）とターゲットグループの属性についてまとめてみた](https://blog.serverworks.co.jp/2023/04/13/115851#ターゲットグループの属性とは)
+- [Application Load Balancer のターゲットグループ属性を編集する](https://docs.aws.amazon.com/ja_jp/elasticloadbalancing/latest/application/edit-target-group-attributes.html)
+
+<br>
+
+加重ランダムについて
+- [Application Load Balancer のターゲットグループ](https://docs.aws.amazon.com/ja_jp/elasticloadbalancing/latest/application/load-balancer-target-groups.html#modify-routing-algorithm)
 
 ---
 
@@ -119,7 +151,7 @@
 
 - ターゲットをターゲットグループから登録解除するまでの遅延時間
 
-    - 遅延時間の間に、登録解除対象のターゲットへのリクエストを全て済ましてしまうのが目的
+    - 遅延時間の間に、登録解除対象のターゲットへのリクエストを全て済ませてしまうのが目的
 
 <br>
 
@@ -139,3 +171,25 @@
 [Load Balancerの仕組み、構成](https://qiita.com/s_yanada/items/111c709b1362313dfebc#登録解除の遅延)
 
 [[AWS Black Belt Online Seminar] Elastic Load Balancing (ELB)](https://d1.awsstatic.com/webinars/jp/pdf/services/20191029_AWS-Blackbelt_ELB.pdf)
+
+---
+
+### スロースタート期間
+
+- 通常 ELB はターゲットへのヘルスチェックが成功した直後にリクエストを振り分ける (= スロースタート期間 0秒)
+
+- スロースタート期間を設けることで、ELB はターゲットへのヘルスチェックが成功した後に設定された期間リクエストの振り分けを待つ
+
+
+<img src="./img/ELB-Slow-Start_1.png" />
+
+<br>
+<br>
+
+参考サイト
+
+スロースタート期間について
+- [【AWSチュートリアル】WEBサーバ用のALBを作成してみよう！](https://study-infra.com/aws-web-alb-02/#toc10)
+
+ELB のヘルスチェックについて
+- [ELBとRoute 53のヘルスチェック仕様の違い](https://dev.classmethod.jp/articles/health-check-spec-elb-route53/)
