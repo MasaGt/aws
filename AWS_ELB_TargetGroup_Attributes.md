@@ -45,7 +45,7 @@
 
     - `ロードバランシングアルゴリズム`
 
-        - リクエストを割り振るアルゴリズム
+        - ELB がターゲットにリクエストを割り振るアルゴリズム
 
         - `ラウンドロビン`
 
@@ -125,6 +125,8 @@
     <br>
 
     - `クロスゾーン負荷分散`
+
+        - 
     
     <br>
 
@@ -303,3 +305,77 @@ ELB のヘルスチェックについて
 [ALBのスティッキーセッションの仕様について教えてください。](https://dev.classmethod.jp/articles/tsnote-alb-sticky-session-specification/)
 
 [Network Load Balancer(NLB)のスティッキーセッション維持期間はどのくらいですか?](https://support.serverworks.co.jp/hc/ja/articles/5884706664473-Network-Load-Balancer-NLB-のスティッキーセッション維持期間はどのくらいですか)
+
+[AWSのロードバランサーのスティッキーセッションの仕組み](https://techblog.techfirm.co.jp/entry/knowledge-about-elb-stickysession)
+
+---
+
+### クロスゾーン負荷分散
+
+#### ELB \~ 複数 AZ 配置の実態
+
+- ELB を複数 AZ に配置すると、各々の AZ に ELB の実態としての ENI が作成される
+    
+    <img src="./img/ELB-Multi-AZ_1.png" />
+
+<br>
+
+#### クロスゾーン負荷分散がオフの場合
+
+- リクエストを受けた ELB は、**自身が属している AZ に配置されたターゲット**にリクエストを割り振る
+
+    <img src="./img/ELB-Cross-Zone-Load-Balancing_1.png" />
+
+<br>
+
+- 各 ELB ノードと同一 AZ にあるターゲット数がそれぞれ異なっている場合には以下のようにトラフィックが偏ってしまう
+    
+    <img src="./img/ELB-Cross-Zone-Load-Balancing_2.png" />
+
+<br>
+
+#### クロスゾーン負荷分散がオンの場合
+
+- 各 ELB ノードは **AZ を跨いで全てのターゲット**にリクエストを割り振る
+
+    <img src="./img/ELB-Cross-Zone-Load-Balancing_3.png" />
+
+<br>
+
+#### 重要なポイント
+
+- ALB
+
+    - デフォルトでクロスゾーン負荷分散がON
+
+        - ★ELB ノードとターゲット間の AZ を跨いだデータ転送料はかからない
+
+<br>
+
+- NLB
+
+    - デフォルトでクロスゾーン負荷分散は**OFF**
+
+        - ★クロスゾーン負荷分散を ON にした時の AZ を跨いだデータ転送料が発生する
+
+<br>
+
+- GLB
+
+    - デフォルトでクロスゾーン負荷分散は**OFF**
+
+        - ★クロスゾーン負荷分散を ON にした時の AZ を跨いだデータ転送料が発生する
+
+<br>
+<br>
+
+参考サイト
+
+クロスゾーン負荷分散について
+- [AWS Black Belt Online Seminar Elastic Load Balancing](https://pages.awscloud.com/rs/112-TZM-766/images/AWS-Black-Belt_2023_Elastic-Load-Balancing_0525_v1.pdf)
+
+ELB の各サービスのデフォルトでのクロスゾーン負荷分散の ON / OFF について
+- [ELBの種類によるクロスゾーン負荷分散のデフォルト値調べ](https://dev.classmethod.jp/articles/elb_crosszone_load_balancing_default_value)
+
+クロスゾーン負荷分散について、および AZ を跨いだデータ転送料について
+- [【初心者向け】Elastic Load Balancing(ELB) 入門！完全ガイド](https://zenn.dev/issy/articles/zenn-elb-overview#クロスゾーン負荷分散)
