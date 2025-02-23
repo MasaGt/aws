@@ -4,7 +4,7 @@
 
 1. EC2 に SSH で接続する
 
-    [詳しくはこちらを参照](./踏み台サーバー.md#踏み台サーバーへ-ssh-接続)
+    [詳しくはこちらを参照](./EC2_PublicInstance_Access.md)
 
 2. EC2 に mariadb をインストールする
 
