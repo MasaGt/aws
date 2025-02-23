@@ -65,7 +65,13 @@
 
         - `加重ランダム`
 
+            <img src="./img/ELB_TargetGroup-Attributes_8.png" />
+
             - ターゲットグループ内の正常なターゲットにリクエストを**均等に、ランダムな順序**で振り分ける方法
+
+            - `異常緩和`
+
+                - [異常緩和](#異常緩和)の有効/無効化
 
     <br>
 
@@ -85,14 +91,15 @@
 
         - スティッキーセッションの有効/無効の設定
 
+        - 「維持設定をオンにする」= スティッキーセッションを有効化
+
         <img src="./img/ELB_TargetGroup-Attributes_6.png" />
 
         <br>
 
-
         - `維持設定のタイプ`
 
-            - ロードバランサーが Cookie を生成しました
+            - `ロードバランサーが Cookie を生成しました`
 
                 - 同一ユーザーの判断を ALB 側で自動で生成する Cookie の値で判断する
 
@@ -102,7 +109,7 @@
 
             <br>
 
-            - アプリケーションベースの Cookie
+            - `アプリケーションベースの Cookie`
 
                 - 同一ユーザーの判断をアプリケーション側で付与する Cookie の値で判断する
 
@@ -126,50 +133,45 @@
 
     - `クロスゾーン負荷分散`
 
-        - 
+        - [クロスゾーン負荷分散](#クロスゾーン負荷分散)の ON/OFF
     
     <br>
 
     <img src="./img/ELB_TargetGroup-Attributes_4.png" />
 
-    <br>
-
-    - 設定タイプ
-
-        - `統合設定`
-
-        - `正常状態の要件`
-
-        - `最初限の正常なターゲットパーセンテージ`
-
-
-    <br>
-
     <img src="./img/ELB_TargetGroup-Attributes_5.png" />
 
     <br>
 
-    - 設定タイプ
+    - *設定タイプの「統合設定」と「詳細設定」の違い
+
+        - DNS フェイルオーバーとフェイルオープンに対して個別に正常状態の条件を設定できるのが「詳細設定」。できないのが「統合設定」
+
+    <br>
+
+    - `設定タイプ`
+
+        - `統合設定`
+
+            - [DNS フェイルオーバーとルーティングフェイルオープン](#dns-フェイルオーバーとルーティングフェイルオープン)のトリガーを一緒の条件で設定する
 
         - `詳細設定`
 
+            - [DNS フェイルオーバーとルーティングフェイルオープン](#dns-フェイルオーバーとルーティングフェイルオープン)のトリガーを個別の条件で設定する
+
         <br>
 
-        - DNS - 正常状態の要件
+        - `正常状態の要件`
 
-            - `最小限の正常なターゲット数`
+            - `最初限の正常なターゲット数`
+
+                - DNS フェイルオーバー/リクエストフェイルオープンをトリガーするしきい値 (正常なターゲットの台数で指定)
 
             <br>
 
             - `最初限の正常なターゲットパーセンテージ`
 
-        <br>
-
-        - ルーティング - 正常状態の要件
-
-            - `最小限の正常なターゲット数`
-
-            - `最小限の正常なターゲットパーセンテージ`
+                - DNS フェイルオーバー/リクエストフェイルオープンをトリガーするしきい値 (正常なターゲットの割合で指定)
 
 <br>
 <br>
@@ -379,3 +381,129 @@ ELB の各サービスのデフォルトでのクロスゾーン負荷分散の 
 
 クロスゾーン負荷分散について、および AZ を跨いだデータ転送料について
 - [【初心者向け】Elastic Load Balancing(ELB) 入門！完全ガイド](https://zenn.dev/issy/articles/zenn-elb-overview#クロスゾーン負荷分散)
+
+---
+
+### DNS フェイルオーバーとルーティングフェイルオープン
+
+#### クロスゾーン負荷分散との関係
+
+- クロスゾーン負荷分散がオフの時
+
+    - 正常なターゲットのカウントは各 AZ ごとに実行される
+
+        <img src="./img/ELB-Target-Group-Health-Requirements_2.png" />
+
+<br>
+
+- クロスゾーン負荷分散がオンの時
+
+    - 正常なターゲットのカウントは AZ を跨いだ全てのターゲットを対象に実行される
+
+        <img src="./img/ELB-Target-Group-Health-Requirements_3.png" />
+<br>
+<br>
+
+#### DNS フェイルオーバー
+
+- **クロスゾーン負荷分散がオフの場合**: ELB ノードと同じ AZ 上のターゲットに対して設定された正常状態のしきい値を下回ると、**リクエストがそのゾーンの ELB ノードに割り振られなくなる**
+
+    <img src="./img/ELB-DNS-Failover_1.png" />
+
+<br>
+
+- **クロスゾーン負荷分散がオンの場合**: AZ を跨ぐ全てのターゲットに対して設定された正常状態のしきい値を下回ると、**全ての ELB ノードにリクエストが割り振られなくなる** (TODO: 実際にやってみて証拠を記載する)
+
+    <img src="./img/ELB-DNS-Failover_2.png" />
+
+<br>
+<br>
+
+#### ルーティングフェイルオープンとは
+
+- **クロスゾーン負荷分散がオフの場合**: ELB ノードと同じ AZ 上のターゲットに対して設定された正常状態のしきい値を下回ると、**ELB ノードは異常なターゲットにもリクエスを割り振るようになる**
+
+    <img src="./img/ELB-Routing-Failopen_1.png" />
+
+<br>
+
+- **クロスゾーン負荷分散がオンの場合**: AZ を跨ぐ全てのターゲットに対して設定された正常状態のしきい値を下回ると、**全ての ELB ノードは異常なターゲットにもリクエストを割り振るようになる**
+
+    <img src="./img/ELB-Routing-Failopen_2.png" />
+
+<br>
+<br>
+
+#### ポイント
+
+- しきい値として正常なターゲットの台数と割合の両方を設定した場合、どちらかのしきい値に達した時、対象のアクション (DNS フェイルオーバー / ルーティングフェイルオープン) がトリガーされる
+
+    <img src="./img/ELB-Target-Group-Health-Requirements_1.png" />
+
+<br>
+
+- DNS フェイルオーバーとルーティングフェイルオープンに個別のしきい値を設定する場合 (= 設定タイプに「詳細設定」を選択する場合) `DNSのフェイルオーバーのしきい値 >= ルーティングフェイルオープンのしきい値` である必要があるらしい
+
+    - 上記の設定の場合、ルーティングフェイルオープンの有無に関わらず DNS フェイルオーバーが発生する = **ルーティングフェイルオープンよりも先に DNS フェイルオーバーがトリガーされる**
+
+    - 個人的にはクロスゾーン負荷分散が無効の場合は上記のしきい値の関係を満たした方がいいが、クロスゾーン負荷分散が有効の場合は上記のしきい値の関係を満たした方がいいのかについては疑問が残る
+
+        <img src="./img/ELB-Target-Group-Health-Requirements_4.png" />
+
+<br>
+<br>
+
+参考サイト
+
+[Application Load Balancer のターゲットグループ](https://docs.aws.amazon.com/ja_jp/elasticloadbalancing/latest/application/load-balancer-target-groups.html#target-group-health)
+
+[[アップデート] ELBにアプリケーションの可用性を向上する4つの機能が発表されました！#reinvent](https://dev.classmethod.jp/articles/elb-capabilities-application-availability/#toc-albnlb)
+
+[AWS Black Belt Online Seminar Elastic Load Balancing](https://pages.awscloud.com/rs/112-TZM-766/images/AWS-Black-Belt_2023_Elastic-Load-Balancing_0525_v1.pdf)
+
+---
+
+### 加重ランダムとは
+
+- ELB → ターゲットへのルーティングアルゴリズムの1つ
+
+- 正常なターゲットへランダムにリクエストを割り振る
+
+- ★★★「加重」という単語が付くからと言って**ターゲットへ割り振るリクエストに重みをつけれるというわけではない**ということに注意
+
+- [異常緩和](#異常緩和)という機能を利用できる
+
+<br>
+
+#### ラウンドロビンとの違い
+
+- ラウンドロビン
+    - 正常なターゲットに均等かつ**順番のとおりに**ルーティングする
+
+<br>
+
+- 加重ランダム
+    - 正常なターゲットに均等に、**ランダムな順序**でルーティング
+
+    - [異常緩和](#異常緩和)を利用できる
+
+<br>
+
+#### 異常緩和
+
+- ヘルスチェックで正常と判断されても、5xx 系のエラーレスポンスを返すターゲットへのリクエストの割合(加重)を自動的に下げる機能
+
+    - 500 系のエラーレスポンスを検出する機能を異常検出と呼ぶ
+
+        - ★加重ランダムが選択されると、自動で異常検出がオンになり、オフにすることはできない
+
+<br>
+<br>
+
+参考サイト
+
+異常緩和について
+- [AWS re:Invent 2024 - Optimizing ELB traffic distribution for high availability (NET401) を聴講して](https://qiita.com/n_53_xx/items/e57ff23868055abf375b#targetの選択)
+- [AWSのApplication Load BalancerにAutomatic Target Weightsという新機能が来てました](https://tech-blog.cloud-config.jp/2023-11-29-aws-application-load-balancer-new-feature-automatic-target-weights)
+- [aws アプリケーション ロード バランサー エラスティックロードバランシング](https://docs.aws.amazon.com/ja_jp/elasticloadbalancing/latest/application/elb-ag.pdf)
+- [AWS re:Invent 2023レポート【後編】AWSエンジニア向け、keynote以外の気になるアップデート](https://www.itis.nssol.nipponsteel.com/blog/aws-reinvent-2023-02.html)
