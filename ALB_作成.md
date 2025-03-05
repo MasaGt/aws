@@ -17,6 +17,7 @@
 <img src="./img/ALB-Create_1.png" />
 
 <br>
+<br>
 
 2\. ALB に関しての項目を設定してゆく
 
@@ -46,6 +47,7 @@
         - ライアントが IPv6 アドレスのみを使用してロードバランサーと通信する場合、こちらを選択する
 
 <br>
+<br>
 
 <img src="./img/ALB-Create_3.png" />
 
@@ -61,6 +63,7 @@
 
     - ALB では、2つ以上のアベイラビリティーゾーンからのサブネットを選択する必要がある
 
+<br>
 <br>
 
 <img src="./img/ALB-Create_4.png" />
@@ -79,6 +82,7 @@
         <img src="./img/ALB-Create_6.png" />
 
 <br>
+<br>
 
 <img src="./img/ALB-Create_7.png" />
 
@@ -91,6 +95,7 @@
 - `デフォルトアクション`
     - ALB が外部からのリクエストを受けた場合、そのリクエストの振り分け先 ([ターゲットグループ](./TargetGroup.md))
 
+<br>
 <br>
 
 <img src="./img/ALB-Create_8.png" />
@@ -114,18 +119,66 @@
     - 特別に許可を与えた顧客のみアクセス許可したいWebサービスが当てはまる
 
 <br>
+<br>
 
-<img src="./img/ALB-Create_9.png" />
+<img src="./img/ALB-CloudFront-WAF_2.png" />
 
-- `AWS Web Application Firewall (WAF)`
-    - 詳しくは[WAF](WAF.md)を参照
-    - 不正なアクセスを監視、検出、ブロックするサービス
+<img src="./img/ALB-CloudFront+WAF_1.png" height="300" />
 
-    <img src="./img/WAF_1.png" />
+- `CloudFront + WAF`
 
-    引用: [会社の顔「Webサイト」を守れ！AWS WAFとは？ ～構築・運用編～](https://www.cloudsolution.tokai-com.co.jp/white-paper/2021/1005-259.html)
+
+    - `Apply application layer acceleration and security protections - in front of the load balancer`
+
+        - ALB の前に CloudFront とその CloudFront へのリクエストをチェックする WAF を作成するかどうか
 
     <br>
+
+    - `Security best practice`
+
+        - ALB へのアクセスを CloudFront からのみにするためのセキュリティグループを ALB に付与するかどうか
+
+<br>
+<br>
+
+<img src="./img/ALB-WAF_2.png" />
+
+<img src="./img/ALB-WAF_1.png" height="200"/>
+
+- `AWS Web Application Firewall (WAF)`
+
+    - `アプリケーション層のセキュリティ保護 - ターゲットの前`
+
+        - ALB からターゲットへののリクエストをチェックする WAF を作成するかど
+
+    <br>   
+
+    - `Auto-create pre-defined WAF`
+
+        - AWS が用意しているデフォルトの WAF (Web ACL) を利用する
+
+        - `ルールアクション`
+
+            - マネージドルール内のルールに一致した時のアクションを Block か Count にする
+
+        <br>
+
+        - `Rousource name`
+
+            - 作成する Web ACL の名前を自動作成のものにするか自分で名前を付けて作成するか
+
+    <br>
+
+    - `Use an exiting WAF configuration`
+
+        - 自分が作成した WAF (Web ACL) を利用する
+
+        - `ウェブ ACL`
+
+            - 利用する作成済みの Web ACL
+
+<br>
+<br>
 
 - `AWS Global Accelerator`
     - クライアントからのリクストを適切なリージョンに振り分けるサービス
@@ -145,8 +198,46 @@
 
 参考サイト
 
-- 公式の ALB 説明ページ -> [Application Load Balancer の作成](https://docs.aws.amazon.com/ja_jp/elasticloadbalancing/latest/application/create-application-load-balancer.html#configure-load-balancer)
+公式の ALB 説明ページ
+- [Application Load Balancer の作成](https://docs.aws.amazon.com/ja_jp/elasticloadbalancing/latest/application/create-application-load-balancer.html#configure-load-balancer)
 
-- 公式の HTTPS リスナーの設定についての説明ページ -> [Application Load Balancer 用の HTTPS リスナーを作成する](https://docs.aws.amazon.com/ja_jp/elasticloadbalancing/latest/application/create-https-listener.html#describe-ssl-policies)
+公式の HTTPS リスナーの設定についての説明ページ
+- [Application Load Balancer 用の HTTPS リスナーを作成する](https://docs.aws.amazon.com/ja_jp/elasticloadbalancing/latest/application/create-https-listener.html#describe-ssl-policies)
 
-- ALB のセキュリティポリシーの選定について -> [ELB のセキュリティポリシー変更はブラウザの対応プロトコルを考慮して慎重に](https://dev.classmethod.jp/articles/sugano-028-security/)
+ALB のセキュリティポリシーの選定について
+- [ELB のセキュリティポリシー変更はブラウザの対応プロトコルを考慮して慎重に](https://dev.classmethod.jp/articles/sugano-028-security/)
+
+CloudFront + WAF のオプションについて
+- [[アップデート] Application Load Balancer コンソールから CloudFront + WAF を統合出来るようになりました](https://dev.classmethod.jp/articles/alb-cloudfront-integration-builtin-waf/)
+
+WAF のオプションについて
+- [[アップデート] Application Load Balancer のコンソール上でもワンクリックで、AWS WAF を作成し適用出来るようになりました](https://dev.classmethod.jp/articles/application-load-balancer-one-click-waf-integrations/)
+
+---
+
+### スキーム
+
+- インターネット向け
+
+    - ロードバランサーはパブリック IP アドレスを持つ
+
+        - よって、ロードバランサーはインターネットからアクセスされることができる
+
+    - 用途: 一般的なインターネットからのリクエストを割り振るロードバランサーに用いる
+
+<br>
+
+- 内部
+
+    - ロードバランサーはプライベート IP アドレスのみを持つ
+
+        - よって、ロードバランサーは VPC 内部からのみアクセスされる
+
+    - 用途: VPC 内部のリクエストを割り振るロードバランサーに用いる (内部APIの負荷分散や、VPC内部のサービスへのリクエスト分散など)
+
+<br>
+<br>
+
+参考サイト
+
+[ALBの内部向けとインターネット向けの違いについて](https://blog.mmmcorp.co.jp/2025/02/18/types-of-alb/)
