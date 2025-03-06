@@ -127,7 +127,6 @@
 
 - `CloudFront + WAF`
 
-
     - `Apply application layer acceleration and security protections - in front of the load balancer`
 
         - ALB の前に CloudFront とその CloudFront へのリクエストをチェックする WAF を作成するかどうか
@@ -212,6 +211,7 @@ CloudFront + WAF のオプションについて
 
 WAF のオプションについて
 - [[アップデート] Application Load Balancer のコンソール上でもワンクリックで、AWS WAF を作成し適用出来るようになりました](https://dev.classmethod.jp/articles/application-load-balancer-one-click-waf-integrations/)
+- [Integrations for your Application Load Balancer](https://docs.aws.amazon.com/elasticloadbalancing/latest/application/load-balancer-integrations.html#load-balancer-waf)
 
 ---
 

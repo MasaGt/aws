@@ -184,6 +184,63 @@ ALB についての参考サイト1: [ロードバランサーのサブネット
 
 ---
 
+### リスナー、リスナールール、アクション
+
+- #### ルール
+
+    - リスナーは「どのプロトコル（HTTP/HTTPSなど）・ポートでリクエストを受け取るか」の定義のこと
+
+<br>
+
+- #### リスナールール
+
+    - リクエストに対して設定するルールセットのこと
+
+    - リスナールール内に条件とアクションを定義することで、条件に一致したリクエストに対するアクションを実行させることができる
+
+<br>
+
+- #### アクション
+
+    - リスナールールに一致したリクエストに対する処理のこと
+
+        - `ターゲットグループに転送`
+
+            - 定義ずみの[ターゲットグループ](./AWS_ELB_TargetGroup.md)にリクエストを転送する
+
+        <br>
+
+        - `URL にリダイレクト`
+
+            - 指定の URL にリクエストを転送する
+
+        <br>
+
+        - `固定レスポンスを返却する`
+
+            - レスポンスコード、Content-Type、レスポンス本文を設定できる
+
+<br>
+
+- #### デフォルトアクション
+
+    - 他のリスナールールにマッチしなかったときに実行されるアクションのこと
+
+<br>
+<br>
+
+参考サイト
+
+[【図解】ALBの構成要素（リスナー・ルールなど）やELBとの違いを解説【AWS】](https://konishi-tech.com/alb/)
+
+[ELB（Elastic Load Balancer）のリスナーとは？AWSにおけるリスナーの基本的な役割と機能](https://www.issoh.co.jp/column/details/2893/)
+
+[ALBリスナールールを使って特定パス以下のアクセスを許可IPからのみに制限する](https://dev.classmethod.jp/articles/alb-path-and-ip-based-restriction/)
+
+[Application Load Balancer のリスナールール](https://docs.aws.amazon.com/ja_jp/elasticloadbalancing/latest/application/listener-update-rules.html)
+
+---
+
 ### 利用料金
 
 #### 基本的なコスト
