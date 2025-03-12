@@ -17,6 +17,8 @@
 
 [Auto Scalingの段階スケーリングポリシーについて](https://dev.classmethod.jp/articles/auto-scaling-steps/)
 
+[【AWS初学者向け・図解】EC2 AutoScalingとは？現役エンジニアがわかりやすく解説](https://o2mamiblog.com/aws-ec2-autoscaling-beginner)
+
 ---
 
 ### 手動スケーリング
@@ -74,6 +76,8 @@
 [EC2 Auto Scaling スケーリングポリシーのまとめ](https://zenn.dev/taroman_zenn/articles/8a07d4e08f8219)
 
 [Auto Scalingの段階スケーリングポリシーについて](https://dev.classmethod.jp/articles/auto-scaling-steps/)
+
+[【AWS初学者向け・図解】EC2 AutoScalingとは？現役エンジニアがわかりやすく解説](https://o2mamiblog.com/aws-ec2-autoscaling-beginner)
 
 ---
 

@@ -18,7 +18,7 @@
 
 - 同様のサービスとして CouldWatch Events がある
 
-    - EventBridge は CloudWatch Eventsをベースに構築された、CloudWatch Events発展版のサービスと考えて良い
+    - EventBridge は CloudWatch Events をベースに構築された、発展版のサービスと考えて良い
 
         - EventBridge では AWS 以外のサービスとも連携できるが、CloudWatch Events ではできないなどの特徴がある
 
@@ -95,10 +95,6 @@
 
         - AWS サービスと独自のアプリケーションの両方に使用できるイベントバス
         
-        - SaaS 側でAWS のアカウント登録などなどをしないと基本的に利用できない
-
-            - 例: [Mackerelというサーバー監視サービスからEventBridgeにイベントを送信する方法](https://mackerel.io/ja/docs/entry/howto/alerts/eventbridge)
-
     <br>
 
     - カスタムイベントバス
@@ -112,6 +108,10 @@
         - SaaS パートナー用のイベントバス
 
         - SaaSサービス側で登録する必要がある
+
+        - SaaS 側でAWS のアカウント登録などをしないと基本的に利用できない
+
+            - 例: [Mackerelというサーバー監視サービスからEventBridgeにイベントを送信する方法](https://mackerel.io/ja/docs/entry/howto/alerts/eventbridge)
         
 <br>
 
@@ -216,7 +216,7 @@
 
 - ★ スキーマレジストリの使用は無料
 
-- ★ スキーマ検出機能は有効
+- ★ スキーマ検出機能は有料
 
 <br>
 
