@@ -1,0 +1,26 @@
+AWSTemplateFormatVersion: "2010-09-09"
+Description: "Udemy CloudFormation Training for EC2"
+Parameters:
+  KeyName:
+    Description: "Key-pair name that will be used for remote connection"
+    Type: String
+  SecurityGroupId:
+    Description: "Security group id that will be attached to the EC2 instance"
+    Type: String
+  SubnetId:
+    Description: "Subnet id in which the EC2 instance will be deployed"
+    Type: String
+Resources:
+  MyEC2Instance:
+    Type: "AWS::EC2::Instance"
+    Properties:
+      ImageId: "ami-08b5b3a93ed654d19"
+      InstanceType: "t2.micro"
+      KeyName: !Ref KeyName
+      AvailabilityZone: "us-east-1a"
+      NetworkInterfaces: #ENIの設定
+        - DeviceIndex: 0 #NetworkInterfacesを設定する場合、DeviceIndexの設定は必須
+          AssociatePublicIpAddress: true #パブリックIPの付与
+          SubnetId: !Ref SubnetId
+          GroupSet:
+            - !Ref SecurityGroupId
