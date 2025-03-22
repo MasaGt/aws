@@ -1,0 +1,151 @@
+AWSTemplateFormatVersion: '2010-09-09'
+Description: Udemy CloudFormation Training for RDS
+Parameters:
+  #RDS用のパラメータ
+  RDSMasterUserName:
+    Description: Master User Name for MySQL
+    Type: String
+    Default: admin
+    MinLength: "1"
+    MaxLength: "16"
+    AllowedPattern: ^[a-zA-Z0-9]* # 半角英数字のみを許容する正規表現
+  RDSMasterUserPassword:
+    Description: Master User Password for MySQL
+    Type: String
+    MinLength: "8"
+    AllowedPattern: ^[a-zA-Z0-9]*$ # 半角英数字のみを許容する正規表現
+    NoEcho: true #入力画面にパスワードを表示せず*で表すオプション
+  RDSSubnetGroupName:
+    Description: Subnet Group Name in which the primary RDS instance will be deployed
+    Type: String
+
+  #EC2用のパラメータ
+  EC2KeyName:
+    Description: Key-pair name that will be used for remote connection
+    Type: String
+  EC2SubnetId:
+    Description: Subnet id in which the EC2 instance will be deployed
+    Type: String
+  SecurityGroupVpcId:
+    Description: VPC ID for Security Group
+    Type: String
+
+Metadata:
+  AWS::CloudFormation::Interface:
+    ParameterGroups:
+      #EC2用のパラメーターグループ
+      - Label:
+          default: EC2 Configuration
+        Parameters:
+          - EC2KeyName
+          - EC2SubnetId
+          - SecurityGroupVpcId
+      - Label:
+          #RDS用のパラメーターグループ
+          default: RDS Configuration
+        Parameters:
+          - RDSMasterUserName
+          - RDSMasterUserPassword
+          - RDSSubnetGroupName
+
+Resources:
+  #★★★RDSインスタンス(リードレプリカ)の作成★★★
+  MyReadreplica:
+    Type: AWS::RDS::DBInstance
+    Properties:
+      SourceDBInstanceIdentifier: !Ref MyRDSInstance #レプリケーション元の指定
+      MultiAZ: false
+      DBInstanceIdentifier: myRDSReadreplica
+      DBInstanceClass: db.t3.micro
+      StorageType: gp3
+      AllocatedStorage: '20'
+      VPCSecurityGroups:
+        - !Ref MyRDSSecurityGroup
+
+  #RDSインスタンスの作成
+  MyRDSInstance:
+    Type: AWS::RDS::DBInstance
+    Properties:
+      Engine: mysql
+      MultiAZ: true
+      DBInstanceIdentifier: myRDSInstance
+      MasterUsername: !Ref RDSMasterUserName #パラメータから参照
+      MasterUserPassword: !Ref RDSMasterUserPassword #パラメータから参照
+      DBInstanceClass: db.t3.micro
+      StorageType: gp3
+      AllocatedStorage: '20'
+      DBSubnetGroupName: !Ref RDSSubnetGroupName
+      VPCSecurityGroups:
+        - !Ref MyRDSSecurityGroup
+      DBName: myDB
+
+  #EC2インスタンスの作成
+  MyEC2Instance:
+    Type: AWS::EC2::Instance
+    Properties:
+      ImageId: ami-08b5b3a93ed654d19
+      InstanceType: t2.micro
+      KeyName: !Ref EC2KeyName
+      AvailabilityZone: us-east-1a
+      NetworkInterfaces:
+        #ENIの設定
+        - DeviceIndex: "0" #NetworkInterfacesを設定する場合、DeviceIndexの設定は必須
+          AssociatePublicIpAddress: true #パブリックIPの付与
+          SubnetId: !Ref EC2SubnetId
+          GroupSet:
+            - !Ref MyEC2SecurityGroup
+
+  #EC2インスタンス用のセキュリティグループ
+  MyEC2SecurityGroup:
+    Type: AWS::EC2::SecurityGroup
+    Properties:
+      GroupDescription: Security Group for EC2
+      VpcId: !Ref SecurityGroupVpcId
+      SecurityGroupIngress:
+        #インバウンドルール(SSH許可)
+        - IpProtocol: tcp
+          Description: Allow SSH From Anywhere
+          ToPort: 22
+          FromPort: 22
+          CidrIp: 0.0.0.0/0 #どこからでもSSH通信なら許可する
+      SecurityGroupEgress:
+        #アウトバウンドルール(全てのアウトバウンド通信許可)
+        - IpProtocol: '-1'
+          Description: Allow All Outbound
+          ToPort: -1
+          FromPort: -1
+          CidrIp: 0.0.0.0/0
+
+  #RDS用のセキュリティグループ
+  MyRDSSecurityGroup:
+    Type: AWS::EC2::SecurityGroup
+    Properties:
+      GroupDescription: Security Group for RDS
+      VpcId: !Ref SecurityGroupVpcId
+      SecurityGroupIngress:
+        #インバウンドルール(TCPでのDB接続を許可)
+        - IpProtocol: tcp
+          Description: Allow TCP
+          FromPort: 3306
+          ToPort: 3306
+          SourceSecurityGroupId: !Ref MyEC2SecurityGroup #MyEC2SecurityGroupが付与されているインスタンスからのSSHを許可する
+      SecurityGroupEgress:
+        #アウトバウンドルール(全てのアウトバウンド通信を許可)
+        - IpProtocol: '-1'
+          Description: Allow All Outbound
+          ToPort: -1
+          FromPort: -1
+          CidrIp: 0.0.0.0/0
+
+Outputs:
+  RDSEndpoint:
+    Value: !GetAtt MyRDSInstance.Endpoint.Address
+
+  RDSUsername:
+    Value: !Ref RDSMasterUserName
+
+  RDSDBName:
+    Value: !GetAtt MyRDSInstance.DBName
+
+  RDSReadReplicaEndpoint: #リードレプリカのエンドポイント
+    Value: !GetAtt MyReadreplica.Endpoint.Address
