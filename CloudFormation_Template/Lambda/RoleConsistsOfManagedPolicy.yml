@@ -1,0 +1,27 @@
+AWSTemplateFormatVersion: '2010-09-09'
+Description: Udemy CloudFormation Training for Lambda
+Parameters:
+  PolicyARN:
+    Description: "Policy ARN assigned to this role"
+    Type: "String"
+
+Resources:
+  #CloudWatch LogsとDynamoへのアクセス許可ロール
+  LambdaRole:
+    Type: "AWS::IAM::Role"
+    Properties:
+      AssumeRolePolicyDocument:  #ロールの信頼ポリシー
+        Version: "2012-10-17"
+        Statement:
+          - Effect: "Allow"
+            Principal:
+              Service:
+                - "lambda.amazonaws.com"
+            Action:
+              - "sts:AssumeRole"
+      
+      ManagedPolicyArns: #ロールの許可ポリシー
+        - !Ref PolicyARN
+
+
+
