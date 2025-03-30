@@ -48,20 +48,22 @@
     - `Transform` という機能は複数テンプレートから1つのスタックを構成する
 
 <br>
+<br>
 
 #### ネストスタックのサンプル
 
 <img src="./img/CloudFormation-Nested-Stack_3.png" />
 
 <br>
+<br>
 
 #### ポイント
 
-- ★子スタックの実行は `AWS::CloudFormation::Stack` リソースに定義する
+1. ★子スタックの実行は `AWS::CloudFormation::Stack` リソースに定義する
 
 <br>
 
-- ★`AWS::CloudFormation::Stack` リソースの `Template` 要素には実行する子スタックテンプレートの URL を定義する必要がある
+2. ★`AWS::CloudFormation::Stack` リソースの `Template` 要素には実行する子スタックテンプレートの URL を定義する必要がある
 
     - ★★子スタックのテンプレートを S3 にアップロードする場合、**S3 オプジェクト URL** を Stack リソースの Template 要素に記述する
 
@@ -75,7 +77,7 @@
 
 <br>
 
-- ★★親 → 子 へ変数を渡す場合
+3. ★★親 → 子 へ変数を渡す場合
 
     - (渡す側) 親スタック側では Stack リソースの `Parameters 要素` にて子スタックに渡したい変数とその値を定義する
 
@@ -83,7 +85,7 @@
 
 <br>
 
-- ★★子 → 親 へ変数を渡す場合
+4. ★★子 → 親 へ変数を渡す場合
 
     - (渡す側) 子スタック側では `Outputs セクション` で渡したい変数名とその値を定義する
 
@@ -121,23 +123,25 @@
 <img src="./img/CloudFormation-Cross-Stack_1.png" />
 
 <br>
+<br>
 
 #### ポイント
 
-- 参照される側は Outputs に参照される値を定義する必要がある
+1. 参照される側は Outputs に参照される値を定義する必要がある
 
     - Export の Name 要素で参照する側から利用できる変数名を定義する
 
 <br>
 
-- 参照する側は Fn::ImportValue 関数を使って参照したい値を取得する
+2. 参照する側は Fn::ImportValue 関数を使って参照したい値を取得する
 
 <br>
 
-- クロススタック参照を利用している場合、**参照しているスタックを削除しない限り、参照されているスタックを削除 & 更新することはできない**
+3. クロススタック参照を利用している場合、**参照しているスタックを削除しない限り、参照されているスタックを削除 & 更新することはできない**
 
     <img src="./img/CloudFormation-Cross-Stack_2.png" />
 
+<br>
 <br>
 
 #### 循環参照
@@ -180,11 +184,51 @@
 
 ### Transform Include
 
-- テンプレートの [Transform セクション](./CloudFormation_Template.md#transform) にて [Include マクロ](#include)で他のテンプレートファイルを取り込む方法
+- テンプレートの [Transform セクション](./CloudFormation_Template.md#transform) や Fn:Transform 関数に Include マクロを指定して他のテンプレートファイルを取り込む方法
+
+    - Include マクロ (`AWS::Include`) とは、テンプレートの実行前に他のテンプレートを取り込むことのできる処理 (≒ライブラリみたいみたいなもの)
+
+<br>
 
 - ★★ネストスタックやクロススタック参照と異なり、実行結果は1つのスタックになる
 
-- 今回の学習ではあまり深く勉強しないため両略する
+<br>
+<br>
+
+#### AWS Include のサンプル
+
+<img src="./img/CloudFormation-Include_1.png" />
+
+<br>
+<br>
+
+#### ポイント
+
+1. Include する側のテンプレートで Transform セクション or Fn:Transform 関数に AWS::Include を指定し、取り込みたい他のテンプレートを指定する
+
+    <img src="./img/CloudFormation-Include_2.png" />
+
+<br>
+
+2. ★★★Include される側のテンプレートの形式に注意
+
+    - Include する側に取り込まれた結果、正しく実行される形式で定義する必要がある
+
+        <img src="./img/CloudFormation-Include_3.png" />
+
+<br>
+
+3. ★★`AWS:Include` の `Location` にはオブジェクト URL ではなく **S3 URI** を指定する必要がある
+
+    <img src="./img/CloudFormation-Include_4.png" />
+
+<br>
+
+4. ★★Include される側では !Ref や !GetAtt の様に関数を省略形で記述してはいけない
+
+    - 関数の省略形で記述した場合、エラーが発生しスタックが正しく作成されない → [こちら](https://dev.classmethod.jp/articles/aws-include-transform-failed/)を参照
+
+        <img src="./img/CloudFormation-Include_5.png" />
 
 <br>
 <br>
@@ -194,3 +238,5 @@
 [CloudFormationをゼロから勉強する。（その６：Transformによるインクルード）](https://qiita.com/sakai00kou/items/57019ef4b3b6b7d61251)
 
 [Include Transformを使ってCFnテンプレートをモジュール化できそう](https://cloud5.jp/aws-include-transform-basic/)
+
+[CloudFormation で AWS::Include Transform 利用時にハマってしまった件について](https://dev.classmethod.jp/articles/aws-include-transform-failed/)

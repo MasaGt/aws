@@ -1,0 +1,15 @@
+#VPCリソースの作成
+Parameters:
+  IncludeTemplateLocation:
+    Type: String
+
+Resources:
+  TestVPC:
+    Type: "AWS::EC2::VPC"
+    Properties:
+      CidrBlock: "172.16.0.0/16"
+
+  Fn::Transform:
+    Name: "AWS::Include"
+    Parameters:
+      Location: !Ref IncludeTemplateLocation

@@ -1,0 +1,6 @@
+#VPC内に作成するサブネットリソース
+TestSubnet:
+  Type: "AWS::EC2::Subnet"
+  Properties:
+    CidrBlock: 172.16.1.0/24
+    VpcId: !Ref: TestVPC
