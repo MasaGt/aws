@@ -1,0 +1,22 @@
+##ネストスタックの練習
+AWSTemplateFormatVersion: "2010-09-09"
+Description: "Nested Stack Sample"
+
+Resources:
+  #VPCリソース
+  MyVPC:
+    Type: "AWS::EC2::VPC"
+    Properties:
+      CidrBlock: "172.16.0.0/16"
+
+  #子スタック(child2.yml)の実行
+  ChildStack2:
+    Type: "AWS::CloudFormation::Stack"
+    Properties:
+      TemplateURL: "https://sample99999.s3.us-east-1.amazonaws.com/child2.yml"
+      Parameters:
+        VPCid: !Ref MyVPC
+
+Outputs:
+  VPCid:
+    Value: !Ref MyVPC

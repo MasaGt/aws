@@ -1,0 +1,7 @@
+#参照する側のスタック
+Resources:
+  TestSubnet:
+    Type: "AWS::EC2::Subnet"
+    Properties:
+      CidrBlock: 172.16.1.0/24
+      VpcId: !ImportValue test-vpc-id

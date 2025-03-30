@@ -1,0 +1,12 @@
+#参照される側のスタック
+Resources:
+  TestVPC:
+    Type: "AWS::EC2::VPC"
+    Properties:
+      CidrBlock: "172.16.0.0/16"
+
+Outputs:
+  TestVPC:
+    Value: !Ref TestVPC
+    Export:
+      Name: "test-vpc-id"

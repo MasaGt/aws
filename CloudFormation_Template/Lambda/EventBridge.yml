@@ -1,0 +1,35 @@
+Resources:
+  #デフォルトイベントバス
+  MyEventBus:
+    Type: "AWS::Events::EventBus"
+    Properties:
+      Name: "UdemyTestBus" #必須項目
+      Description: "MyEventBus For Udemy"
+
+  #毎分ターゲットをトリガーするルール
+  TriggerLambdaTenMinutes:
+    Type: "AWS::Events::Rule"
+    Properties:
+      Name: "UdemyTestRule"
+      EventBusName: !Ref UdemyTestBus
+      RoleArn: !GetAtt LambdaInvocationRole.arn
+      ScheduleExpression: cron(* * * * ? *)
+      Targets:
+        - Arn: !GetAtt MyLambda.arn
+          Id: "001"
+
+
+  #Lambda呼び出しを可能にするIAMロール
+  LambdaInvocationRole:
+    Type: "AWS::IAM::Role"
+    Properties:
+      AssumeRolePolicyDocument: #信頼ポリシー
+      Policies: #許可ポリシー
+        - PolicyName: "InvokingLambda"
+          PolicyDocument:
+            Version: "2012-10-17"
+            Statement:
+              - Effect: "Allow"
+                Action:
+                  - "lambda:InvokeFunction"
+                Resource: !GetAtt TriggerLambdaTenMinutes.arn

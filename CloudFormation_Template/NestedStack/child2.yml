@@ -1,0 +1,14 @@
+#ネストスタックの練習
+AWSTemplateFormatVersion: "2010-09-09"
+Description: "Nested Stack Sample"
+
+Parameters:
+  VPCid:
+    Type: String
+    
+Resources:
+  MySubnet:
+    Type: "AWS::EC2::Subnet"
+    Properties:
+      CidrBlock: "172.16.1.0/24"
+      VpcId: !Ref VPCid

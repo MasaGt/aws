@@ -2,7 +2,7 @@ AWSTemplateFormatVersion: '2010-09-09'
 Description: Udemy CloudFormation Training for Lambda
 
 Resources:
-  #CloudWatch LogsとDynamoへのアクセス許可ロール
+  #CloudWatch LogsとDynamoへのアクセス許可ロール (Lambda用)
   LambdaRole:
     Type: "AWS::IAM::Role"
     Properties:

@@ -7,6 +7,7 @@
 - [Metadata](#metadata)
 - [Parameters](#parameters)
 - [Mappings](#mappings)
+- [Transform]()
 - [Conditions](#conditions)
 - [Resources](#resources)
 - [Outputs](#outputs)
@@ -22,6 +23,7 @@
     "Parameters": "",
     "Conditions": "",
     "Mappings": "",
+    "Transform": [""],
     "Resources": "",
     "Outputs": "",
 }
@@ -35,6 +37,7 @@ Metadata:
 Parameters:
 Conditions:
 Mappings:
+Transform:
 Resources:
 Outputs:
 ```
@@ -220,6 +223,62 @@ Outputs:
 [初学者のためのCloudFormation超入門（テンプレート編)](初学者のためのCloudFormation超入門（テンプレート編)
 
 [CloudFormationの条件（Conditions）の使い方](https://props-room.com/articles/handbook/aws-cloudformation-guide-322)
+
+---
+
+### Transform
+
+- テンプレートファイルからリソースを作成する前に、そのテンプレートファイルに対する処理をするマクロの定義をするセクション
+
+    - 例: テンプレートファイル内のテキストの置換や検索など
+
+<br>
+
+- Transform セクションでは定義された順番にマクロ処理を行う
+
+<br>
+
+- ★★Fn::Transform　組み込み関数からでもマクロは呼び出すことができる
+
+<br>
+
+- 呼び出すマクロの種類によって記述が少し異なるっぽい(多分)
+
+    - `AWS::Serverless 変換` マクロ処理を行う場合
+
+    ```yaml
+    Transform: "AWS::Serverless-2016-10-31"
+    ```
+
+    - `AWS::Serverless 変換` とは AWS SAM で記載されたテンプレートを JSON または YAML 形式に変換するマクロ処理のこと
+    
+        - AWS SAM とは CloudFormation テンプレートの特定の記述形式のこと
+
+    <br>
+    <br>
+
+    - `AWS::Include 変換` マクロ処理を行う場合
+
+    ```yaml
+    Transform: 
+      Name: 'AWS::Include' #マクロ処理名
+      Parameters: #引数
+        Location: 's3://amzn-s3-demo-bucket/MyFileName.yaml'
+    ```
+
+    <br>
+
+    - `AWS::Include 変換` とは当テンプレートに他のテンプレートの内容を埋め込む (= Include) することができるマクロ処理
+
+<br>
+<br>
+
+参考サイト
+
+[CloudFormation テンプレートの Transform セクション](https://docs.aws.amazon.com/ja_jp/AWSCloudFormation/latest/UserGuide/transform-section-structure.html)
+
+
+[[AWS Black Belt Online Seminar] AWS CloudFormation](https://d1.awsstatic.com/webinars/jp/pdf/services/20200826_AWS-BlackBelt_AWS-CloudFormation.pdf)
 
 ---
 

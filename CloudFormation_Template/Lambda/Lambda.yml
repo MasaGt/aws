@@ -1,0 +1,36 @@
+AWSTemplateFormatVersion: '2010-09-09'
+Description: Udemy CloudFormation Training for Lambda
+
+Resources:
+  MyLambda:
+    Type: "AWS::Lambda::Function"
+    Properties:
+      FunctionName: "MyLambda"
+      Handler: "index.handler" #Lambda関数が呼び出された時に実行される関数名
+      Role: !GetAtt MyLambdaExecutionRole.arn #!Ref IAロールはロール名を返すので、!RefではなくGetAttを使う
+      Code: #関数の中身
+        ZipFile: |-
+          const { DynamoDBClient } = require('@aws-sdk/client-dynamodb');
+          const { UpdateCommand } = require('@aws-sdk/lib-dynamodb');
+
+          exports.handler = async (event) => {
+            const client = new DynamoDBClient({ region: 'ap-east-1' });
+
+            const params = {
+              TableName: 'Users',
+              Key: {
+                'UserId': '1',
+              },
+              UpdateExpression: 'set UserName = :UserName, Age = :Age',
+              ExpressionAttributeValues: {
+                ':UserName': 'Tanaka Taro',
+                ':Age': 20,
+              },
+              ReturnValues: 'ALL_NEW'
+            };
+            const command = new UpdateCommand(params);
+            const data = await client.send(command);
+            console.log(data);
+
+            return data;
+          };

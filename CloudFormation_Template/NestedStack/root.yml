@@ -1,0 +1,20 @@
+#ネストスタックの練習
+AWSTemplateFormatVersion: "2010-09-09"
+Description: "Nested Stack Sample"
+
+Resources:
+  #子スタック(child1.yml)の実行
+  ChildStack1:
+    Type: "AWS::CloudFormation::Stack"
+    Properties:
+      TemplateURL: "https://sample99999.s3.us-east-1.amazonaws.com/child1.yml"
+
+  #子スタック(child3.yml)の実行
+  ChildStack3:
+    Type: "AWS::CloudFormation::Stack"
+    Properties:
+      TemplateURL: "https://sample99999.s3.us-east-1.amazonaws.com/child3.yml"
+      Parameters:
+        VPCid: !GetAtt ChildStack1.Outputs.VPCid
+
+  
