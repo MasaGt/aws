@@ -1,8 +1,15 @@
+#zipファイル(hadnler.js.zip)からLambda関数を作成するテンプレート
 AWSTemplateFormatVersion: '2010-09-09'
-Description: Udemy CloudFormation Training for Lambda
+Description: Lambda from zip file
+
+Parameters:
+  BucketName: #zipファイルをアップしたバケット名
+    Type: String
+  FileName: #zipファイル名
+    Type: String
 
 Resources:
-  #CloudWatch LogsとDynamoへのアクセス許可ロール (Lambda用)
+  #Lambda関数用IAMロールリソース
   LambdaRole:
     Type: "AWS::IAM::Role"
     Properties:
@@ -15,7 +22,6 @@ Resources:
                 - "lambda.amazonaws.com"
             Action:
               - "sts:AssumeRole"
-      
       Policies: #ロールの許可ポリシー
         - PolicyName: "TrainingLambdaPolicy"
           PolicyDocument:
@@ -33,16 +39,15 @@ Resources:
                 Resource:
                   - "*"
 
-#クロススタック参照様にLambdaRoleをexport
-Outputs:
-  LambdaRoleArn:
-    Value: !GetAtt LambdaRole.arn
-    Description: "ARN of LambdaRole"
-    Export:
-      Name: "lambda-role-arn"
-      
-
-
-
-
-
+  #Lambda関数リソース
+  MyLambda:
+    Type: "AWS::Lambda::Function"
+    Properties:
+      Runtime: "nodejs18.x"
+      Handler: "index.handler"
+      Role: !GetAtt LambdaRole.Arn
+      Code:
+        #zipファイルをアップロードしたバケット名
+        S3Bucket: "!Ref BucketName"
+        #zipファイル名(拡張子込み)
+        S3Key: !Ref FileName
