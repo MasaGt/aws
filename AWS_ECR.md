@@ -309,6 +309,10 @@ Public Registry, Public Repository について
 
 - **レジストリを丸ごと**、他のリージョンのレジストリに複製したり、他アカウントのレジストリに複製できる
 
+    <img src="./img/ECR-Cross-Region-Replication_1.png" />
+
+    <img src="./img/ECR-Cross-Account-Replication_11.png" />
+
 <br>
 
 - **レジストリ内のリポジトリ単位**で他リージョンに複製したり、他アカウントに複製することもできる
@@ -330,9 +334,27 @@ Public Registry, Public Repository について
 
 <br>
 
-- ECR プライベートレジストリ内にパブリックレジストリのリポジトリをキャッシュする機能
+- ECR プライベートレジストリ内に**他のレジストリ (パブリック/プライベートレジストリや、 DockerHub など) のリポジトリをキャッシュする機能**
 
-    - キャッシュ後は、24時間に1回キャッシュを最新のものに更新してくれる
+    - キャッシュ後は、プライベートリポジトリへの pull される際にキャッシュがキャッシュ元の最新のものと同じかどうかを判断し、最新のものでなければキャッシュを更新する
+
+    <img src="./img/ECR-Pull-Through-Cache_2.png" />
+
+<br>
+
+- **キャッシュ名前空間**を指定することで、プルしたプライベートに作成されるリポジトリに任意のプレフィックスをつけることができる
+
+<br>
+
+- **アップストリーム名前空間**を指定することで、 pull する対象のリポジトリのフィルタリングをすることができる
+
+    - ECRのレプリケーションで設定する[リポジトリフィルタ](./AWS_ECR_Replication.md)のようなもの
+
+<br>
+
+- AWS マネージドコンソールからは、ECR のプライベートリポジトリのサイドメニューの `Features & Settings` 以下の `Pull through cache` もしくは `Features & Settings` 画面の `Pull through cache 編集` をクリックすることでプルスルーキャッシュの設定をすることができる
+
+    <img src="./img/ECR-Pull-Through-Cache_1.svg" />
 
 <br>
 
@@ -361,11 +383,14 @@ Public Registry, Public Repository について
 
 クロスリージョンレプリケーションについて
 
-- []()
+- [Amazon ECRのクロスリージョンレプリケーションを試してみた](https://dev.classmethod.jp/articles/20240229-ecr-crr/)
+- [ECRのクロスリージョン・クロスアカウントレプリケーションが、複製元で対象リポジトリの限定が可能に！](https://dev.classmethod.jp/articles/ecr-replicate-individual-repositories-regions-accounts/)
 
 <br>
 
 クロスアカウントレプリケーションについて
+
+- [AWS ECRのクロスアカウントレプリケーションを設定してみた](https://tech-blog.yayoi-kk.co.jp/entry/2021/03/08/110000)
 
 <br>
 
@@ -373,6 +398,7 @@ Public Registry, Public Repository について
 
 - [Amazon ECRプルスルーキャッシュリポジトリをVPCエンドポイント経由で試す](https://qiita.com/t_tsuchida/items/d3c284aac0f84a597c70)
 - [Amazon ECRに「プルスルーキャッシュリポジトリ」機能が追加されました #reinvent](https://dev.classmethod.jp/articles/ecr-pull-through-cache-repositories/)
+- [[アップデート] Amazon ECR がプルスルーキャッシュ先として新たに Amazon ECR をサポートしました](https://dev.classmethod.jp/articles/amazon-ecr-pull-through-cache-supports-ecr-to-ecr/)
 
 ---
 
