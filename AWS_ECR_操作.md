@@ -166,7 +166,7 @@
 - `docker pull` コマンドで指定したイメージを pull する
 
     ```bash
-    docker pull <aws_account_id>.dkr.ecr.<region>.amazonaws.com/<repogitory_name>[:TAG]
+    docker pull <aws_account_id>.dkr.ecr.<region>.amazonaws.com/<repository_name>[:TAG]
     ```
 
 <br>
