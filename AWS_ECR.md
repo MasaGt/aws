@@ -250,17 +250,15 @@ Public Registry, Public Repository について
 
 - レジストリ内のコンテナイメージの脆弱性スキャン (= 脆弱性のチェック) を行う機能
 
-    - コンテナイメージの詳しい構成については[こちら](#コンテナイメージの構成について)を参照
-
 <br>
 
 - イメージスキャンには以下の2種類がある
 
-    1. 基本スキャン
+    1. **基本スキャン**
 
-        - Clairと呼ばれるオープンソースの脆弱性データベースを参照してスキャンしているらしい
+        - AWS_NATIVE と呼ばれる AWS 独自のスキャン
 
-        - 内容: OS パッケージの脆弱性スキャン = **コンテナイメージの OS レイヤーの脆弱性チェック**
+        - 内容: 説明では OS パッケージの脆弱性スキャンとなっているが、CVE データベースに登録されている脆弱性を発見してくれるっぽい
 
         <br>
 
@@ -272,9 +270,9 @@ Public Registry, Public Repository について
 
     <br>
 
-    2. 拡張スキャン
+    2. **拡張スキャン**
 
-        - [Amazon Inspector](https://www.wafcharm.com/jp/blog/amazon-inspector-for-beginners/)でスキャンする方法
+        - [Amazon Inspector](https://www.wafcharm.com/jp/blog/amazon-inspector-for-beginners/) でスキャンする方法
 
         - 内容: OS パッケージ + プログラミング言語パッケージの脆弱性スキャン
 
@@ -282,7 +280,7 @@ Public Registry, Public Repository について
 
         <br>
 
-        - スキャンのタイミング: コンテナイメージを ECR にプッシュした時、または拡張スキャンが利用しているツールの脆弱性情報が更新されたら自動で再スキャンが実行される
+        - スキャンのタイミング: コンテナイメージを ECR にプッシュした時、または拡張スキャンが利用している DB の脆弱性情報が更新されたら自動で再スキャンが実行される
 
             - ★拡張スキャンでは手動でのスキャンはできない
 
@@ -378,18 +376,17 @@ Public Registry, Public Repository について
 - [チュートリアルDockerコンテナの脆弱性スキャン ~ Dockerイメージを更新します。](https://gitlab-docs.creationline.com/ee/tutorials/container_scanning/#update-the-docker-image)
 - [Amazon ECRとInspectorのイメージスキャン機能の違い](https://qiita.com/hayao_k/items/889f2a6cdc4e377fb634)
 - [新たなAmazon Inspectorと統合されたAmazon ECRのイメージスキャン拡張版がリリースされました！ #reinvent](https://dev.classmethod.jp/articles/amazon-ecr-enhanced-scanning/)
+-[[終了予告] Amazon ECRの古い基本スキャン(CLAIR)が2025年10月1日でサポート終了します](https://dev.classmethod.jp/articles/amazon-ecr-basic-scan-clair-end-of-support/)
 
 <br>
 
 クロスリージョンレプリケーションについて
-
 - [Amazon ECRのクロスリージョンレプリケーションを試してみた](https://dev.classmethod.jp/articles/20240229-ecr-crr/)
 - [ECRのクロスリージョン・クロスアカウントレプリケーションが、複製元で対象リポジトリの限定が可能に！](https://dev.classmethod.jp/articles/ecr-replicate-individual-repositories-regions-accounts/)
 
 <br>
 
 クロスアカウントレプリケーションについて
-
 - [AWS ECRのクロスアカウントレプリケーションを設定してみた](https://tech-blog.yayoi-kk.co.jp/entry/2021/03/08/110000)
 
 <br>
@@ -546,3 +543,150 @@ Public Registry, Public Repository について
     <img src="./img/ECR-Image-OS-Package_1.png" />
 
     [ベースイメージの自動更新を構成する](https://cloud.google.com/run/docs/configuring/services/automatic-base-image-updates?hl=ja)
+
+---
+
+### コンテナセキュリティ
+
+- コンテナ化されたアプリケーションをマルウェアや脆弱性から守るための取り組みのこと
+
+- コンテナアプリケーションを安全に運用するためには、保護するべき対象が多岐にわたる
+
+    - コンテナイメージ
+        - 具体的な方法: [イメージスキャン](#イメージスキャンを理解するために)等
+
+    <br>
+
+    - レジストリやリポジトリ
+        - 具体的な方法: レジストリ/リポジトリポリシーの適切な設定等
+
+    <br>
+
+    - オーケストレーター
+        - オーケストレーターを操作する際は認証を必須づける等
+
+    <br>
+
+    - コンテナランタイム (コンテナ)
+        - 具体的な方法: コンテナの権限見直し、コンテナ間のネットワーク設定の見直し等
+
+    <br>
+
+    - アプリケーション
+        - 具体的な方法: 脆弱性のあるコードを含めたり、脆弱性のあるライブラリを利用しない等
+    
+<br>
+
+- ★ECR で出来るコンテナセキュリティは「イメージスキャンによるイメージ保護」と「レジストリ/リポジトリポリシー」の2つ
+
+<br>
+<br>
+
+参考サイト
+
+[コンテナセキュリティとは？代表的な脅威と事例、安全に運用するセキュリティ対策のポイントを紹介](https://jp.tdsynnex.com/blog/security/what-is-container-security/)
+
+[コンテナのセキュリティ対策まとめ](https://qiita.com/MAKOTO1995/items/8d66c9ec1ef8e56f0c7c)
+
+[コンテナ・セキュリティの基本　～イメージ、レジストリ、オーケストレータ、コンテナの各階層から見た脆弱性と対策](https://www.imagazine.co.jp/container-sec/)
+
+[コンテナセキュリティ リスクと対策 コンテナイメージ/コンテナレジストリ](https://www.trendmicro.com/ja_jp/business/capabilities/solutions-for/container-security/six-points-for-container-security-container-image-and-continer-registry.html)
+
+[コンテナセキュリティ リスクと対策 オーケストレーションツール/アプリケーション､ネットワーク](https://www.trendmicro.com/ja_jp/business/capabilities/solutions-for/container-security/six-points-for-container-security-container-orchestration-application-and-network.html)
+
+[コンテナセキュリティ リスクと対策 コンテナホスト/ビルドパイプライン](https://www.trendmicro.com/ja_jp/business/capabilities/solutions-for/container-security/six-points-for-container-security-container-host-and-build-pipeline.html)
+
+---
+
+### イメージスキャンを理解するために
+
+
+#### イメージスキャンのざっくりとした仕組み ([Docker Scout の場合](#docker-scout-とは))
+
+- ソフトウェアの脆弱性情報を CVE や NVD から取得する (どのデータベースから取得するかはスキャンツールによる)
+
+<br>
+
+- 各レイヤー (Docker file の FROM, ADD や RUN などの命令文に対応する) をスキャンし、取得してきた脆弱性のあるソフトウェアが含まれていた場合、脆弱性を検出する
+
+    <img src="./img/Docker-Client-Image-Scan_1.svg" />
+
+<br>
+
+- おそらく ECR の基本スキャンも同じような感じで行われている
+
+    - よって、ECR の基本スキャンもベースイメージ以上のレイヤーもスキャンの対象のはず
+
+<br>
+<br>
+
+#### CVE (Common Vulnerabilities and Exposures) とは
+
+- 文脈によって以下の2つの意味がある
+
+    - MITRE Corporation が中心となって運用しているデータベースのこと
+
+        - ソフトウェアの脆弱性情報が保存されている
+
+        - ★リスクや影響、修正などの情報は含まない
+
+    <br>
+
+    - MITRE Corporation が採番している**一意の**ソフトウェアの脆弱性情報の**識別子**のこと
+
+<br>
+<br>
+
+#### CVSS (Common Vulnerability Scoring System) とは
+
+- 脆弱性の評価基準及びスコアのこと
+
+<br>
+<br>
+
+#### NVD (National Vulnerability Database) とは
+
+- CVE に登録されている脆弱性に CVSS の評価をつけたデータベースのこと
+
+<br>
+
+- 日本にも同じようなものがある
+
+    - JVN (Japan Vulnerability Notes)
+
+<br>
+<br>
+
+#### Clair とは
+
+- オープンソースなイメージスキャンツール
+
+<br>
+<br>
+
+#### Docker Scout とは
+
+- Docker が提供するイメージスキャンツール
+
+<br>
+<br>
+
+参考サイト
+
+[【入門】知ると差がつく、OSSセキュリティ脆弱性のスキャン・管理ツール概説](https://www.hitachi-solutions.co.jp/sbom/blog/2021100104/)
+
+[脆弱性管理とは？ ～脆弱性管理の基礎知識～](https://www.cybertrust.co.jp/vul-hammer/vulnerability-basic.html)
+
+[共通脆弱性識別子CVE概説](https://www.ipa.go.jp/security/vuln/scap/cve.html)
+
+[What is a CVE?](https://www.redhat.com/en/topics/security/what-is-cve)
+
+[CVE、NVD、JVN…脆弱性情報はどのように公開され管理されているのか](https://cybersecurity-info.com/column/vulnerability-management/)
+
+[CVSSとは？CVEとの違いと脆弱性評価のスコア計算、CVSSを活用する仕事・資格を解説](https://cyber-hr.jp/content/3024)
+
+[CVE,CVSSとは何ぞや？の話](https://qiita.com/tk1253/items/87618bae6a7eda8d7945)
+
+[Clair によるコンテナ・イメージの脆弱性検出](https://www.ogis-ri.co.jp/otc/hiroba/technical/clair/part1.html)
+
+[知らないと損する Docker イメージのレイヤ構造とは](https://www.techscore.com/blog/2018/12/10/docker-images-and-layers/)
