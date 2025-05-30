@@ -121,6 +121,28 @@ CloudFormation での Lambda 関数リソースの要素について
 
 #### コンテナイメージから Lambda 関数を作成
 
+- Docker イメージを [ECR](./AWS_ECR.md)に事前にプッシュしておく必要がある
+
+    <img src="./img/CloudFormation-Lambda-From-Image_1.svg" />
+
+<br>
+
+- 以下が(たぶん)最小のテンプレート
+
+    <img src="./img/CloudFormation-Lambda-From-Image_2.svg" />
+
+    <br>
+
+    - ★`AWS::Lambda::Function` リソースの **PackageType 要素に Image** を指定する
+
+    - ★`AWS::Lambda::Function` リソースの Code 要素内の **ImageUri 要素に イメージ URI** を指定する
+
+        <img src="./img/CloudFormation-Lambda-From-Image_3.svg" />
+
+<br>
+
+- AWS が用意しているベースメージ以外のベースイメージをもとに Lambda 関数を作成する場合は、少し手順がややこしくなる ([こちら](https://qiita.com/eiji-noguchi/items/e226ed7b8da2cd85a06a)を参照)
+
 <br>
 <br>
 
@@ -131,6 +153,12 @@ CloudFormation での Lambda 関数リソースの要素について
 [CloudFormationのテンプレートファイルでLambdaコードベタ書きから脱却したい](https://qiita.com/bd8z/items/91a1ed66e35e7253804d)
 
 [CloudFormationでLambda関数デプロイ(超初歩)](https://qiita.com/da-sugi/items/d2ba119a0e35ad1b352e)
+
+[Node.js Lambda 関数をコンテナイメージとともにデプロイする](https://docs.aws.amazon.com/ja_jp/lambda/latest/dg/nodejs-image.html#nodejs-image-base)
+
+[Lambdaでコンテナイメージから関数を作成する](https://qiita.com/eiji-noguchi/items/e226ed7b8da2cd85a06a)
+
+[AWS Lambda handler はどのように呼ばれるのか](https://zenn.dev/hkdord/articles/lambda-handler-deep-dive)
 
 ---
 
@@ -144,3 +172,4 @@ CloudFormation での Lambda 関数リソースの要素について
 参考サイト
 
 [Lambda Function URLsをCloudFormationとCDKでデプロイする](https://zenn.dev/shimo_s3/articles/de3f1e7bc6828c)
+

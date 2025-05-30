@@ -1,0 +1,42 @@
+#Docker Image から Lambda 関数を作成するテンプレート
+AWSTemplateFormatVersion: '2010-09-09'
+Description: Lambda from image
+
+Parameters:
+  RepositoryURI: #DockerイメージをpushしてあるリポジトリのURI
+    Type: String
+
+Resources:
+  #Lambda関数リソース
+  MyLambda:
+    Type: AWS::Lambda::Function
+    Properties:
+      Role: !GetAtt LambdaRole.Arn
+      PackageType: Image
+      Code:
+        ImageUri: !Ref RepositoryURI
+
+
+  #Lambda関数用IAMロールリソース
+  LambdaRole:
+    Type: "AWS::IAM::Role"
+    Properties:
+      AssumeRolePolicyDocument:  #ロールの信頼ポリシー
+        Version: "2012-10-17"
+        Statement:
+          - Effect: "Allow"
+            Principal:
+              Service:
+                - "lambda.amazonaws.com"
+            Action:
+              - "sts:AssumeRole"
+      Policies: #ロールの許可ポリシー
+        - PolicyName: "TrainingLambdaPolicy"
+          PolicyDocument:
+            Version: '2012-10-17'
+            Statement:
+              - Effect: "Allow"
+                Action:
+                  - "logs:*"
+                Resource:
+                  - arn:aws:logs:*:*:*
