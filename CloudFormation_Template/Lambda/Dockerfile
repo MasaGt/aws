@@ -7,4 +7,4 @@ FROM public.ecr.aws/lambda/nodejs:22
 COPY ./init.js ${LAMBDA_TASK_ROOT}
 
 # 実行コマンドの引数として、エントリーポイントとなる関数handlerを渡す
-CMD [ "index.handler" ]
+CMD [ "init.handler" ]
