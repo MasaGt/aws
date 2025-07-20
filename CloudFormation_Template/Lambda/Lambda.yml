@@ -7,7 +7,8 @@ Resources:
     Properties:
       FunctionName: "MyLambda"
       Handler: "index.handler" #Lambda関数が呼び出された時に実行される関数名
-      Role: !Importvalue lambda-role-arn #クロススタック参照(Role.yml)
+      Runtime: "nodejs22.x"
+      Role: !ImportValue lambda-role-arn #クロススタック参照(Role.yml)
       Code: #関数の中身
         ZipFile: |-
           const { DynamoDBClient } = require('@aws-sdk/client-dynamodb');

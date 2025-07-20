@@ -1,0 +1,61 @@
+#Lambda 関数 (関数URL) を作成するテンプレート (認証タイプ: AWS_IAM)
+AWSTemplateFormatVersion: '2010-09-09'
+Description: Lambda URL Function
+
+Resources:
+  #Lambda関数用IAMロールリソース
+  LambdaRole:
+    Type: "AWS::IAM::Role"
+    Properties:
+      AssumeRolePolicyDocument: #ロールの信頼ポリシー
+        Version: "2012-10-17"
+        Statement:
+          - Effect: "Allow"
+            Principal:
+              Service:
+                - "lambda.amazonaws.com"
+            Action:
+              - "sts:AssumeRole"
+
+  MyLambda:
+    #Lambda関数リソース
+    Type: "AWS::Lambda::Function"
+    Properties:
+      FunctionName: "MyLambda"
+      Runtime: "nodejs22.x"
+      Handler: "index.handler" #Lambda関数が呼び出された時に実行される関数名
+      Role: !GetAtt LambdaRole.Arn
+      Code: #関数の中身
+        ZipFile: |-
+          exports.handler = async (args) => {
+            let response = {
+            statusCode: 200,
+            body: JSON.stringify("Hello From Lambda Function URLs")
+            };
+            return response;
+          };
+
+  MyFunctionURL:
+    #関数URLリソース
+    Type: "AWS::Lambda::Url"
+    Properties:
+      AuthType: AWS_IAM 
+      TargetFunctionArn: !GetAtt MyLambda.Arn
+  
+Outputs:
+  #関数URLのエンドポイントを表示
+  FunctionURL:
+    Value: !GetAtt MyFunctionURL.FunctionUrl
+    Description: "Endpoint of Function URL"
+  FunctionURLsARN:
+    Value: !GetAtt MyFunctionURL.FunctionArn
+    Description: "ARN of Function URL"
+  LambdaARN:
+    Value: !GetAtt MyLambda.Arn
+    Description: "ARN of Lambda Function"
+
+
+
+
+
+

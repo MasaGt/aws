@@ -95,11 +95,17 @@ CloudFormation での Lambda 関数リソースの要素について
 
 #### テンプレート内にコードをベタ書き
 
-<img src="./img/CloudFormation-Lambda-Inline_1.png" />
+<img src="./img/CloudFormation-Lambda-Inline_1.svg" />
 
 <br>
 
 - テンプレート内の Lambda 関数リソース (`AWS::Lambda::Function`) の Code 要素内の **ZipFile 要素にベタ書きする**
+
+- ★CloudFormation でインライン (=テンプレートにコードをベタ書き) で Lambda 関数を作成する場合、`AWS::Lambda::Function` の **Runtime と Handler 要素は必須要素になる**ことに注意
+
+- ★CloudFormation でインライン (=テンプレートにコードをベタ書き) で Lambda 関数を作成する場合、`AWS::Lambda::Function` の **Handler に指定するエントリーポイントとなるファイル名は index になる**ことに注意
+
+- Code の値の頭の `|-` の意味については[こちら](./CloudFormation_EC2_ユーザーデータ.md#cloudformation-での-ec2-ユーザーデータの書き方)を参照
 
 <br>
 <br>
@@ -166,6 +172,27 @@ CloudFormation での Lambda 関数リソースの要素について
 
 - Lambda の関数 URL については[こちら](./Lambda.md#関数url)を参照
 
+- 通常の Lambda 関数を作成するテンプレートに `AWS::Lambda::Url` リソースを定義する必要がある
+
+    <img src="./img/CloudFormation-Lambda-Function-URL_1.svg" />
+
+    <br>
+
+- ★`AWS::Lambda::Permission` リソースも定義する必要がある (特に `AWS::Lambda::Url.AuthType=NONE` の場合)
+
+    - `AWS::Lambda::Url` リソースを定義すれば関数 URL は作成されるが、それだけでは[アクセスできない](./issues/CloudFormationで作成した関数URLが呼び出せない.md)ため、`lambda:InvokeFuntionUrl` を許可する `AWS::Lambda::Permission` を定義し、関数 URL にアクセスできるようにする
+
+        <img src="./img/CloudFormation-Lambda-Function-URL_2.svg" />
+
+<br>
+<br>
+
+### 認証タイプ IAM
+
+- `AWS::Lambda::Url` の AuthType を IAM にした場合、かつ認証条件が IAM ユーザーかどうかの基本的な認証だけの場合は **AWS::Lambda::Permission** は定義 & 作成しなくてもよい
+
+- IAM 認証の上で、任意の条件を設定したい場合は `AWS::Lambda::Permission` で定義する必要がある
+
 <br>
 <br>
 
@@ -173,3 +200,8 @@ CloudFormation での Lambda 関数リソースの要素について
 
 [Lambda Function URLsをCloudFormationとCDKでデプロイする](https://zenn.dev/shimo_s3/articles/de3f1e7bc6828c)
 
+[AWS::Lambda::Url](https://docs.aws.amazon.com/AWSCloudFormation/latest/TemplateReference/aws-resource-lambda-url.html)
+
+[AWS::Lambda::Permission](https://docs.aws.amazon.com/AWSCloudFormation/latest/TemplateReference/aws-resource-lambda-permission.html)
+
+[Lambda 関数 URL へのアクセスの制御](https://docs.aws.amazon.com/ja_jp/lambda/latest/dg/urls-auth.html#urls-auth-none)

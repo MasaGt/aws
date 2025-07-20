@@ -13,7 +13,7 @@ Resources:
   LambdaRole:
     Type: "AWS::IAM::Role"
     Properties:
-      AssumeRolePolicyDocument:  #ロールの信頼ポリシー
+      AssumeRolePolicyDocument: #ロールの信頼ポリシー
         Version: "2012-10-17"
         Statement:
           - Effect: "Allow"
@@ -33,12 +33,6 @@ Resources:
                 Resource:
                   - arn:aws:logs:*:*:*
               
-              - Effect: "Allow"
-                Action:
-                  - "dynamodb:*"
-                Resource:
-                  - "*"
-
   #Lambda関数リソース
   MyLambda:
     Type: "AWS::Lambda::Function"

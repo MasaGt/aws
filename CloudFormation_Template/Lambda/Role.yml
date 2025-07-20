@@ -15,7 +15,7 @@ Resources:
                 - "lambda.amazonaws.com"
             Action:
               - "sts:AssumeRole"
-      
+
       Policies: #ロールの許可ポリシー
         - PolicyName: "TrainingLambdaPolicy"
           PolicyDocument:
@@ -26,18 +26,12 @@ Resources:
                   - "logs:*"
                 Resource:
                   - arn:aws:logs:*:*:*
-              
-              - Effect: "Allow"
-                Action:
-                  - "dynamodb:*"
-                Resource:
-                  - "*"
 
 #クロススタック参照様にLambdaRoleをexport
 Outputs:
   LambdaRoleArn:
-    Value: !GetAtt LambdaRole.arn
     Description: "ARN of LambdaRole"
+    Value: !GetAtt LambdaRole.Arn
     Export:
       Name: "lambda-role-arn"
       
