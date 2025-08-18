@@ -18,6 +18,7 @@ export class MyVPCPattern extends Construct {
         //vpcリソースの作成
         const vpc = new aws_ec2.Vpc(scope, "MyVPC", {
             maxAzs: 2, //使用するAZは2つ
+            natGateways: 0 //NAT Gatewayは作成しない
         });
 
         //踏み台サーバー(ec2)の作成
