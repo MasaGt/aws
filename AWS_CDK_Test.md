@@ -10,7 +10,7 @@
 
         <br>
 
-        - ★最初のテストは失敗する → 比較対象となるベースラインテンプレートがないため
+        - ★最初のテストは必ず成功する → 比較対象となるベースラインテンプレートがないため
 
         <br>
 
@@ -28,7 +28,7 @@
     
     <br>
 
-    - #### Fine-grained Assertions Test
+    - #### [Fine-grained Assertions Test](./AWS_CDK_Fine-grained_Assertion_Test.md)
 
         - 生成されるテンプレートに対して、以下のような詳細なテストが行える
 

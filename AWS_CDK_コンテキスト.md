@@ -392,13 +392,13 @@ Cloud Assembly について
 
     - key=value の形式でコンテキスト値を指定する
 
-    - 複数のコンテキスト値を渡す際は半角スペースで区切る
+    - 複数のコンテキスト値を渡す際は --context オプションを繰り返す
 
         ```bash
         npx aws-cdk <コマンド> --context key=value
 
         #aws-cdk をグローバルインストールしていれば以下のように実行もできる
-        cdk <コマンド> --context key1=value1 key2=value2
+        cdk <コマンド> --context key1=value1 --context key2=value2
         ```
 
 <br>
