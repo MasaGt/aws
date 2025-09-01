@@ -48,7 +48,7 @@
 
     <br>
 
-    - #### Validation Test
+    - #### [Validation Test](./AWS_CDK_Validation_Test.md)
 
         - プログラム側で実行したバリデーション機能が正しく機能しているかのテスト
 
