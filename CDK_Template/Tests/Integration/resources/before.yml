@@ -1,0 +1,133 @@
+# CDKアプリで生成される内容とほぼ同じCloudFormationテンプレート
+# カスタムオーソライザーのレスポンス形式が SIMPLE → IAM に手動で更新した時に、nableSimpleResponses can only be set for AuthorizerPayloadFormatVersion "2.0".が発生するか確かめるためのファイル
+AWSTemplateFormatVersion: '2010-09-09'
+Description: HTTP API with Custom Lambda Authorizer (SIMPLE response) + Lambda integration for /
+
+Resources:
+
+  # Lambda function for API backend
+  MyLambdaFunction:
+    Type: AWS::Lambda::Function
+    Properties:
+      Handler: index.handler
+      Role: !GetAtt LambdaExecutionRole.Arn
+      Runtime: nodejs18.x
+      Code:
+        ZipFile: |
+          exports.handler = async () => {
+            return {
+              statusCode: 200,
+              body: "hello from lambda",
+            };
+          };
+
+  # Lambda function used as Custom Authorizer
+  MyAuthorizerFunction:
+    Type: AWS::Lambda::Function
+    Properties:
+      Handler: authorizer.handler
+      Role: !GetAtt LambdaExecutionRole.Arn
+      Runtime: nodejs18.x
+      Code:
+        ZipFile: |
+          exports.handler = async (event) => {
+            // Simple allow authorizer example
+            return {
+              isAuthorized: true,
+              context: {},
+            };
+          };
+
+  # IAM Role for Lambda Execution
+  LambdaExecutionRole:
+    Type: AWS::IAM::Role
+    Properties:
+      AssumeRolePolicyDocument:
+        Version: '2012-10-17'
+        Statement:
+          - Effect: Allow
+            Principal:
+              Service:
+                - lambda.amazonaws.com
+            Action:
+              - sts:AssumeRole
+      ManagedPolicyArns:
+        - arn:aws:iam::aws:policy/service-role/AWSLambdaBasicExecutionRole
+
+  # API Gateway HTTP API
+  MyHttpApi:
+    Type: AWS::ApiGatewayV2::Api
+    Properties:
+      Name: SimpleHttpApi
+      ProtocolType: HTTP
+
+  # Lambda Authorizer (SIMPLE response format)
+  MyHttpApiAuthorizer:
+    Type: AWS::ApiGatewayV2::Authorizer
+    Properties:
+      ApiId: !Ref MyHttpApi
+      AuthorizerType: REQUEST
+      AuthorizerUri: 
+        Fn::Sub: >-
+          arn:${AWS::Partition}:apigateway:${AWS::Region}:lambda:path/2015-03-31/functions/${MyAuthorizerFunction.Arn}/invocations
+      IdentitySource:
+        - $request.header.Authorization
+      AuthorizerPayloadFormatVersion: '2.0'
+      EnableSimpleResponses: true
+      Name: SimpleLambdaAuthorizer
+
+  # Lambda Permission to allow API Gateway invoke (authorizer)
+  LambdaPermissionForAuthorizer:
+    Type: AWS::Lambda::Permission
+    Properties:
+      FunctionName: !Ref MyAuthorizerFunction
+      Action: lambda:InvokeFunction
+      Principal: apigateway.amazonaws.com
+      SourceArn:
+        Fn::Sub: arn:${AWS::Partition}:execute-api:${AWS::Region}:${AWS::AccountId}:${MyHttpApi}/*/authorizers/*
+
+  # Lambda Permission to allow API Gateway invoke (backend)
+  LambdaPermissionForBackend:
+    Type: AWS::Lambda::Permission
+    Properties:
+      FunctionName: !Ref MyLambdaFunction
+      Action: lambda:InvokeFunction
+      Principal: apigateway.amazonaws.com
+      SourceArn:
+        Fn::Sub: arn:${AWS::Partition}:execute-api:${AWS::Region}:${AWS::AccountId}:${MyHttpApi}/*/GET/
+
+  # HTTP API Integration for backend Lambda
+  MyHttpApiIntegration:
+    Type: AWS::ApiGatewayV2::Integration
+    Properties:
+      ApiId: !Ref MyHttpApi
+      IntegrationType: AWS_PROXY
+      IntegrationUri: !GetAtt MyLambdaFunction.Arn
+      PayloadFormatVersion: '2.0'
+
+  # HTTP API Route for "/"
+  MyHttpApiRoute:
+    Type: AWS::ApiGatewayV2::Route
+    Properties:
+      ApiId: !Ref MyHttpApi
+      RouteKey: GET /
+      Target:
+        Fn::Join:
+          - '/'
+          - - integrations
+            - !Ref MyHttpApiIntegration
+      AuthorizationType: CUSTOM
+      AuthorizerId: !Ref MyHttpApiAuthorizer
+
+  # Stage
+  MyHttpApiStage:
+    Type: AWS::ApiGatewayV2::Stage
+    Properties:
+      ApiId: !Ref MyHttpApi
+      StageName: prod
+      AutoDeploy: true
+
+Outputs:
+  ApiEndpoint:
+    Description: "API Gateway HTTP API Endpoint"
+    Value: !Sub "https://${MyHttpApi}.execute-api.${AWS::Region}.amazonaws.com/prod/"

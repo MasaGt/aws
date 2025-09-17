@@ -1,0 +1,33 @@
+{
+  "name": "integration",
+  "version": "0.1.0",
+  "bin": {
+    "integration": "bin/integration.js"
+  },
+  "scripts": {
+    "build": "tsc",
+    "watch": "tsc -w",
+    "test": "jest",
+    "cdk": "cdk",
+    "integ-test": "integ-runner --directory ./integ-tests --parallel-regions us-east-1 --clean",
+    "integ-test-force": "integ-runner --directory ./integ-tests --parallel-regions us-east-1 --clean --force",
+    "integ-test-test": "integ-runner --directory ./integ-tests --parallel-regions us-east-1 --force --disable-update-workflow"
+  },
+  "devDependencies": {
+    "@aws-cdk/integ-runner": "^2.190.4",
+    "@aws-cdk/integ-tests-alpha": "^2.214.0-alpha.0",
+    "@types/jest": "^29.5.14",
+    "@types/node": "22.7.9",
+    "aws-cdk": "^2.1028.0",
+    "jest": "^29.7.0",
+    "ts-jest": "^29.2.5",
+    "ts-node": "^10.9.2",
+    "typescript": "~5.6.3"
+  },
+  "dependencies": {
+    "@aws-sdk/client-dynamodb": "^3.883.0",
+    "@aws-sdk/lib-dynamodb": "^3.883.0",
+    "aws-cdk-lib": "^2.214.0",
+    "constructs": "^10.0.0"
+  }
+}
